@@ -2,7 +2,6 @@
 
 > data-visualization
 
-## Build Setup
 
 ``` bash
 # install dependencies
