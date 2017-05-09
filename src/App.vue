@@ -6,20 +6,34 @@
             <span>v1.0</span>
           </h1>
           <div class="nav">
-          <Icon name="flag"></Icon>
-
-            <router-link :to="{path:'dashboard'}" class="border-right">仪表盘</router-link>
-             <router-link :to="{path:'/table'}"  class="border-right">工作表</router-link>
-             <router-link :to="{path:'graph'}"  class="border-right">图表分析</router-link>
-             <router-link :to="{path:'/map'}"  >地图分析</router-link>
+           <ul>
+             <li class="border-right">
+                 <router-link :to="{path:'dashboard'}" >
+             <icon name="flag" scale="1" class="fa-icon"></icon>
+                 仪表盘
+                 </router-link>
+             </li>
+             <li class="border-right">
+                  <router-link :to="{path:'/table'}"  class=""><icon name="flag" scale="1" class="fa-icon"></icon>工作表</router-link>
+             </li>
+             <li class="border-right">
+                <router-link :to="{path:'graph'}"  class=""><icon name="flag" scale="1" class="fa-icon"></icon>图表分析</router-link>
+             </li>
+             <li >
+                <router-link :to="{path:'/map'}"  ><icon name="flag" scale="1" ></Icon>地图分析</router-link>
+             </li>
+           </ul>
+  
           </div>
        
-        <div class="head-nav">
-
+         <div class="head-nav">
           <ul class="nav-list">
-            <li @click="loginClick">登录</li>
-            <li class="nav-pile">|</li>
-            <li @click="regClick">注册</li>
+            <li> {{ username }}</li>
+            <li v-if="username!== ''" class="nav-pile">|</li>
+            <li v-if="username!== ''" @click="quit">退出</li>
+            <li v-if="username=== ''" @click="logClick">登录</li>
+            <li v-if="username===''" class="nav-pile">|</li>
+            <li v-if="username=== ''" @click="regClick">注册</li>
           </ul>
         </div>
       </div>
@@ -33,10 +47,10 @@
       <p>© 2017 wang & liu</p>
     </div>
     <myDialog :isShow="isShowLoginDialog" @on-close="closeDialog('isShowLoginDialog')">
-    <logForm @has-log="onhaslog"></logForm>
+    <logForm @has-log="onSuccessLog"></logForm>
     </myDialog>
     <myDialog :isShow="isShowRegDialog" @on-close="closeDialog('isShowRegDialog')">
-    <regForm></regForm>
+    <regForm @has-reg="onSuccessReg"></regForm>
     </myDialog>
   </div>
 </template>
@@ -45,18 +59,17 @@
 import myDialog from './components/base/dialog.vue'
 import logForm from './components/logForm.vue'
 import regForm from './components/regForm.vue'
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon'
 export default {
   data(){
     return {
       isShowLoginDialog:false,
-      isShowRegDialog:false
+      isShowRegDialog:false,
+      username: '',
+      userId:''
     }
   },
   methods:{
-
-     loginClick(){
+     logClick(){
       this.isShowLoginDialog=true;
     },
      regClick(){
@@ -65,16 +78,29 @@ export default {
     closeDialog(attr){
       this[attr]=false;
     },
-    onhaslog(data){
-      console.log(data);
+    onSuccessLog (data) {
+      this.username = data.username;
+      this.userId=data.userId
+      this.closeDialog('isShowLoginDialog')
+
+    },
+        onSuccessReg (data) {
+      this.username = data.username;
+            this.userId=data.userId
+
+      this.closeDialog('isShowRegDialog')
+
+    },
+    quit(){
+      this.username=""
+      this.userId=''
     }
   },
   components:{
     myDialog,
     logForm,
-    regForm,
-    Icon
-  }
+    regForm
+      }
 
 }
 </script>
@@ -175,26 +201,35 @@ body {
   background: none repeat scroll 0 0 rgba(0, 0, 0, 0.2);
     border-radius: 3px;
     font-size: 11px;
-    margin-left: 0;
     padding: 0 5px;
     position: relative;
     top: -3px;
 }
 .nav{
   float: left;
-  margin-left: 200px;
-background: none repeat scroll 0 0 rgba(0, 0, 0, 0.2);
+  margin-left: 50px;
+   background: none repeat scroll 0 0 rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 30px;
+    border-radius: 10px;
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
     color: #FFFFFF;
+    height: 30px;
+    line-height: 30px;
+    margin-top: 15px;
 }
-.nav a{
+.nav ul li{
   display: block;
   float: left;
   padding-left: 30px;
   padding-right: 30px;
 }
+.fa-icon{
+  position: relative;
+  top: 4px;
+  right: 4px;
+
+}
+
 .nav a:hover{
   color:rgb(101,130,162);
 }
@@ -237,15 +272,13 @@ background: none repeat scroll 0 0 rgba(0, 0, 0, 0.2);
   background: #ddd;
 }
 .button {
-  background: #4fc08d;
+  background: rgb(14,21,34);
   color: #fff;
   display: inline-block;
   padding: 10px 20px;
   cursor: pointer;
 }
-.button:hover {
-  background: #4fc08d;
-}
+
 .g-form {
 
 }

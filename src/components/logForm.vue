@@ -83,7 +83,12 @@ export default {
       }
       else {
         this.errorText = ''
-        this.$http.get('api/login')
+        this.$http.get('api/login',{
+          params:{
+            username:this.usernameModel,
+            password:this.passwordModel
+          }
+        })
         .then((res) => {
           this.$emit('has-log', res.data)
         }, (error) => {

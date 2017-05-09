@@ -51,10 +51,11 @@ export default {
   position: fixed;
   width: 100%;
   height: 100%;
+
 }
 .dialog-cover {
-  background: #000;
-  opacity: .3;
+   background: black;
+  opacity: .7;
   position: fixed;
   z-index: 5;
   top: 0;
@@ -67,7 +68,7 @@ export default {
   position: fixed;
   max-height: 50%;
   overflow: auto;
-  background: #fff;
+  background: rgb(45,68,112);
   top: 20%;
   left: 50%;
   margin-left: -25%;
