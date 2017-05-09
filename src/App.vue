@@ -2,12 +2,16 @@
    <div>
     <div class="app-head">
       <div class="app-head-inner">
-          <h1>数据可视化</h1>
+          <h1>数据可视化
+            <span>v1.0</span>
+          </h1>
           <div class="nav">
-             <router-link :to="{path:'dashboard'}" class="nav-list">仪表盘</router-link>
-        <router-link :to="{path:'/table'}"  class="nav-list">工作表</router-link>
-        <router-link :to="{path:'graph'}"  class="nav-list">图表分析</router-link>
-        <router-link :to="{path:'/map'}"  class="nav-list">地图分析</router-link>
+          <Icon name="flag"></Icon>
+
+            <router-link :to="{path:'dashboard'}" class="border-right">仪表盘</router-link>
+             <router-link :to="{path:'/table'}"  class="border-right">工作表</router-link>
+             <router-link :to="{path:'graph'}"  class="border-right">图表分析</router-link>
+             <router-link :to="{path:'/map'}"  >地图分析</router-link>
           </div>
        
         <div class="head-nav">
@@ -41,7 +45,8 @@
 import myDialog from './components/base/dialog.vue'
 import logForm from './components/logForm.vue'
 import regForm from './components/regForm.vue'
-
+import 'vue-awesome/icons'
+import Icon from 'vue-awesome/components/Icon'
 export default {
   data(){
     return {
@@ -67,7 +72,8 @@ export default {
   components:{
     myDialog,
     logForm,
-    regForm
+    regForm,
+    Icon
   }
 
 }
@@ -140,8 +146,8 @@ body {
 }
 .app-head {
   color: #b2b2b2;
-  height: 90px;
-  line-height: 90px;
+  height: 60px;
+  line-height: 60px;
   width: 100%;
 }
 .app-head-inner {
@@ -165,12 +171,38 @@ body {
     color: #fff;
     float: left;
 }
+.app-head-inner h1 span{
+  background: none repeat scroll 0 0 rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    font-size: 11px;
+    margin-left: 0;
+    padding: 0 5px;
+    position: relative;
+    top: -3px;
+}
 .nav{
   float: left;
   margin-left: 200px;
+background: none repeat scroll 0 0 rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 30px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+    color: #FFFFFF;
 }
 .nav a{
-  padding-left: 10px;
+  display: block;
+  float: left;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.nav a:hover{
+  color:rgb(101,130,162);
+}
+.nav .border-right{
+  
+  border-right: 1px solid rgba(0, 0, 0, 0.4);
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.1);
+
 }
 .head-nav {
   float: right;
@@ -178,9 +210,11 @@ body {
 .head-nav ul {
   overflow: hidden;
 }
+
 .head-nav li {
   cursor: pointer;
   float: left;
+  font-size: 15px;
 }
 .nav-pile {
   padding: 0 10px;
