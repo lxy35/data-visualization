@@ -30,7 +30,7 @@ module.exports = {
      proxyTable:  {
       // proxy all requests starting with /api to jsonplaceholder
       '/api': {
-        target: 'http://rapapi.org/mockjsdata/18574',
+        target: 'http://rapapi.org/mockjsdata/18594',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

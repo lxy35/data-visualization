@@ -83,6 +83,7 @@ export default {
       }
       else {
         this.errorText = ''
+        console.log(this.usernameModel)
         this.$http.get('api/login',{
           params:{
             username:this.usernameModel,

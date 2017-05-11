@@ -5,7 +5,7 @@
           <h1>数据可视化
             <span>v1.0</span>
           </h1>
-          <div class="nav">
+          <div class="nav" v-if="username!==''">
            <ul>
              <li class="border-right">
                  <router-link :to="{path:'dashboard'}" >
@@ -80,14 +80,17 @@ export default {
     },
     onSuccessLog (data) {
       this.username = data.username;
-      this.userId=data.userId
+      this.userId=data.userId;
+      window.userId=data.userId;
+      window.username=data.username;
       this.closeDialog('isShowLoginDialog')
 
     },
-        onSuccessReg (data) {
+   onSuccessReg (data) {
       this.username = data.username;
             this.userId=data.userId
-
+window.userId=data.userId;
+      window.username=data.username;
       this.closeDialog('isShowRegDialog')
 
     },
@@ -153,6 +156,9 @@ table {
 a {
   color: inherit;
   text-decoration: none;
+}
+a:hover{
+  cursor: pointer;
 }
 body {
       color: #9ea7b3!important;

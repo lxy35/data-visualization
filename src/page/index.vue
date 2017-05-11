@@ -1,14 +1,26 @@
 <template>
-<div id="a">首页</div>
+<div id="a">首页
+<button @click="a">11</button>
+<myDialog :isShow="aa"></myDialog>
+</div>
 </template>
 
 <script>
+import myDialog from '../components/base/dialog.vue'
 export default {
   data(){
   	return {
-
+  		aa:false
   	}
-  }
+  },
+  methods:{
+  	a(){
+  		this.aa=true;
+  	}
+  },
+    components:{
+    myDialog
+      }
 
 }
 </script>

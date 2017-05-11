@@ -68,7 +68,7 @@ export default {
   position: fixed;
   max-height: 50%;
   overflow: auto;
-  background: rgb(45,68,112);
+  background: #fff;
   top: 20%;
   left: 50%;
   margin-left: -25%;
