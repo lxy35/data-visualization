@@ -5,7 +5,7 @@
           <h1>数据可视化
             <span>v1.0</span>
           </h1>
-          <div class="nav" v-if="username!==''">
+          <div class="nav" v-if="username==''">
            <ul>
              <li class="border-right">
                  <router-link :to="{path:'dashboard'}" >
@@ -14,7 +14,7 @@
                  </router-link>
              </li>
              <li class="border-right">
-                  <router-link :to="{path:'/table'}"  class=""><icon name="flag" scale="1" class="fa-icon"></icon>工作表</router-link>
+                  <router-link :to="{path:'table'}"  class=""><icon name="flag" scale="1" class="fa-icon"></icon>工作表</router-link>
              </li>
              <li class="border-right">
                 <router-link :to="{path:'graph'}"  class=""><icon name="flag" scale="1" class="fa-icon"></icon>图表分析</router-link>
@@ -22,6 +22,7 @@
              <li >
                 <router-link :to="{path:'/map'}"  ><icon name="flag" scale="1" ></Icon>地图分析</router-link>
              </li>
+
            </ul>
   
           </div>
