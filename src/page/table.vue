@@ -1,5 +1,6 @@
 <template>
-<div>工作表</div>
+<img src="../assets/table.png"  width="100%">
+
 </template>
 
 <script>

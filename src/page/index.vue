@@ -1,25 +1,19 @@
 <template>
-<div id="a">首页
-<button @click="a">11</button>
-<myDialog :isShow="aa"></myDialog>
-</div>
+<img src="../assets/index.png"  width="100%">
 </template>
 
 <script>
-import myDialog from '../components/base/dialog.vue'
 export default {
   data(){
   	return {
-  		aa:false
+  		
   	}
   },
   methods:{
-  	a(){
-  		this.aa=true;
-  	}
+  	
   },
     components:{
-    myDialog
+   
       }
 
 }
@@ -27,10 +21,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#a{
-	width: 100px;
-	height: 100px;
-	background: #fff;
-}
 
 </style>

@@ -23,19 +23,8 @@
 字段
 </h1>
 <ul>
-	<li>商圈</li>
-	<li>商圈</li>
-	<li>商圈</li>
-	<li>商圈</li>
+	<li><icon name="bookmark"></icon>&nbsp;&nbsp;&nbsp;数值</li>
 
-	<li>商圈</li>
-	<li>商圈</li>
-	<li>商圈</li>
-	<li>商圈</li>
-	<li>商圈商圈商圈</li>
-	<li>商圈商圈商圈</li>
-	<li>商圈商圈商圈</li>
-	<li>1</li>
 </ul>
 </div>
 
@@ -68,14 +57,14 @@
 	<hr>
 </div>
 <div class="map-type">
-	<h1 >图表类型</h1>
+	<h1  >图表类型</h1>
 
-<router-link to='/map/map1' tag='div' @click.native="map1Click" ><img src="../assets/mapType/1.png" height="33" width="33" title="气泡图"></router-link>
-<router-link to='/map/map2' tag='div' @click.native="map2Click"><img src="../assets/mapType/2.png" height="33" width="33" title="热力图"></router-link>
-<router-link to='/map/map3' tag='div' @click.native="map3Click"><img src="../assets/mapType/3.png" height="33" width="33" title="海量点"></router-link>
-<router-link to='/map/map4' tag='div'><img src="../assets/mapType/4.png" height="33" width="33" title="统计图"></router-link>
-<router-link to='/map/map5' tag='div'><img src="../assets/mapType/5.png" height="33" width="33" title="轨迹图"></router-link>
-<router-link to='/map/map6' tag='div'><img src="../assets/mapType/6.png" height="33" width="33" title="动态轨迹图"></router-link>
+<router-link to='/map/map1' tag='div' @click.native="map1Click" v-bind:class="{'map-type-selected':selected1}" class="div1"><img src="../assets/mapType/1.png" height="33" width="33" title="气泡图"></router-link>
+<router-link  v-bind:class="{'map-type-selected':selected2}" class="div2" to='/map/map2' tag='div' @click.native="map2Click"><img src="../assets/mapType/2.png" height="33" width="33" title="热力图"></router-link>
+<router-link  v-bind:class="{'map-type-selected':selected3}" class="div3" to='/map/map3' tag='div' @click.native="map3Click"><img src="../assets/mapType/3.png" height="33" width="33" title="海量点"></router-link>
+<router-link  v-bind:class="{'map-type-selected':selected4}" class="div4" to='/map/map4' tag='div'><img src="../assets/mapType/4.png" height="33" width="33" title="统计图"></router-link>
+<router-link  v-bind:class="{'map-type-selected':selected5}" class="div5" to='/map/map5' tag='div'><img src="../assets/mapType/5.png" height="33" width="33" title="轨迹图"></router-link>
+<router-link  v-bind:class="{'map-type-selected':selected6}" class="div6" to='/map/map6' tag='div'><img src="../assets/mapType/6.png" height="33" width="33" title="动态轨迹图"></router-link>
 
 </div>
 <div class="map-option">
@@ -99,6 +88,12 @@ mounted(){
 },
   data(){
   	return {
+                selected1:true,
+                selected2:false,
+                selected3:false,
+                selected4:false,
+                selected5:false,
+                selected6:false,
   	//散点图支持的图形符号形状
   	map1_type:['circle','pin', 'rect', 'triangle', 'diamond'  ],
   		data:[
@@ -209,7 +204,12 @@ mounted(){
  
   	},
   	map1Click(type){
-  		
+  		 this.selected1=true;
+        this.selected2=false;
+        this.selected3=false;
+        this.selected4=false;
+        this.selected5=false;
+        this.selected6=false;
         //echarts实例
 		 var myChart = echarts.init(document.getElementById('map'));
 		 //数据
@@ -255,13 +255,60 @@ myChart.setOption(option);
 
   	},
   	map2Click(){
-  		let map=this.init();
-       let a= new BMapLib.HeatmapOverlay({"radius":20});
-	   map.addOverlay(a);
-	   a.setDataSet({data:this.data,max:100});
+        this.selected1=false;
+        this.selected2=true;
+        this.selected3=false;
+        this.selected4=false;
+        this.selected5=false;
+        this.selected6=false;
+//echarts实例
+         var myChart = echarts.init(document.getElementById('map'));
+         //数据
+           let points=[];
+             this.data.forEach(function(val,index){
+                let arr=[val.lng,val.lat,val.count]
+                points.push(arr)
+        })
+         myChart.setOption( {
+        animation: false,
+        bmap: {
+            center: [116.418261, 39.921984],
+            zoom: 14,
+            roam: true
+        },
+        visualMap: {
+            show: false,
+            top: 'top',
+            min: 0,
+            max: 5,
+            seriesIndex: 0,
+            calculable: true,
+            inRange: {
+                color: ['blue', 'blue', 'green', 'yellow', 'red']
+            }
+        },
+        series: [{
+            type: 'heatmap',
+            coordinateSystem: 'bmap',
+            data: points,
+            pointSize: 5,
+            blurSize: 6
+        }]
+    });
+        // 添加百度地图插件
+        var bmap = myChart.getModel().getComponent('bmap').getBMap();
+        bmap.addControl(new BMap.MapTypeControl());
+    
+
   	}
   	,
   	map3Click(){
+       this.selected1=false;
+        this.selected2=false;
+        this.selected3=true;
+        this.selected4=false;
+        this.selected5=false;
+        this.selected6=false;
   		// 基于准备好的dom，初始化echarts实例
 var myChart = echarts.init(document.getElementById('map'));
 var colorList = [
@@ -425,7 +472,8 @@ function initMap() {
 .map-left-field ul li{
 	color: black;
 	margin: 10px 20px;
-	list-style: square;
+
+	/*list-style: square;*/
 
 }
 
@@ -476,25 +524,54 @@ function initMap() {
 }
 .map-type{
 	height: 160px;
+    position: relative;
+    width: 100%;
 }
 .map-title input{
 	margin: 10px 0px;
 }
 .map-type div{
 	cursor: pointer;
-	float: left;
-	margin:10px;
-	color: black;
 	width: 40px;
 	height: 40px;
 	display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid #fff;
+        background-color: #fff;
+
 }
-.map-type div:hover{
-	background-color: #fff;
-	    border: 1px solid #5182e4;;
+.div1{
+    position: absolute;
+    top: 40px;
+    left: 20px;
+}
+.div2{
+    position: absolute;
+    top: 40px;
+    left: 90px;
+}
+.div3{
+    position: absolute;
+    top: 40px;
+    left: 150px;
+}
+.div4{
+    position: absolute;
+    top: 100px;
+    left: 20px;
+}
+.div5{
+    position: absolute;
+    top: 100px;
+    left: 90px;
+}
+.div6{
+    position: absolute;
+    top: 100px;
+    left: 150px;
+}
+.map-type-selected{
+	border: 1px solid #5182e4;;
 
 }
 

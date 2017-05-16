@@ -1,5 +1,5 @@
 <template>
-<div>仪表盘</div>
+<img src="../assets/dashboard.png"  width="100%">
 </template>
 
 <script>
