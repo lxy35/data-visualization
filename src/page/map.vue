@@ -43,7 +43,27 @@
 	</div>
 	<div class="map-content-down">
 		<div class="map-content-sort">
-			
+			<div >
+                <h1>筛选器</h1>
+            </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <hr>
+            <div>
+                <h1>颜色样式</h1>
+            </div>
 		</div>
 		<div id="map">
 			
@@ -53,7 +73,7 @@
 <div class="map-right">
 <div class="map-title">
 	<h1>图表标题</h1>
-	<input type="" name="">
+	<input v-model='title' placeholder="图表标题">
 	<hr>
 </div>
 <div class="map-type">
@@ -71,7 +91,7 @@
 		<hr>
 
 	<h1>图表选项</h1>
-	<router-view @icon-change="map1Click"></router-view>
+	<router-view @icon-change="map1Click" @rad-change="map2Click"></router-view>
 
 </div>
 </div>
@@ -88,6 +108,7 @@ mounted(){
 },
   data(){
   	return {
+                title:'美食类商铺数据',
                 selected1:true,
                 selected2:false,
                 selected3:false,
@@ -232,7 +253,7 @@ mounted(){
         mapStyle: {}
     },
     title: {
-        text: "美食类商铺数据",
+        text: this.title,
         left: 'center',
         top: 5,
         backgroundColor: "rgba(255,255,255,0.8)",
@@ -252,9 +273,20 @@ mounted(){
     }]
 };
 myChart.setOption(option);
+// 添加百度地图插件
+        var bmap = myChart.getModel().getComponent('bmap').getBMap();
+        bmap.addControl(new BMap.MapTypeControl());
+         bmap.enableScrollWheelZoom(); // 允许滚轮缩放
+        bmap.addControl(new BMap.NavigationControl());
+        bmap.addControl(new BMap.ScaleControl());
 
   	},
-  	map2Click(){
+  	map2Click(val){
+        console.log(typeof val)
+        if(val instanceof Object)
+        {
+            val=20
+        }
         this.selected1=false;
         this.selected2=true;
         this.selected3=false;
@@ -291,13 +323,16 @@ myChart.setOption(option);
             type: 'heatmap',
             coordinateSystem: 'bmap',
             data: points,
-            pointSize: 5,
+            pointSize: val,
             blurSize: 6
         }]
     });
         // 添加百度地图插件
         var bmap = myChart.getModel().getComponent('bmap').getBMap();
         bmap.addControl(new BMap.MapTypeControl());
+         bmap.enableScrollWheelZoom(); // 允许滚轮缩放
+        bmap.addControl(new BMap.NavigationControl());
+        bmap.addControl(new BMap.ScaleControl());
     
 
   	}
@@ -380,8 +415,8 @@ var option = {
         }
     },
     title: {
-        text: "苏州前端企业分布(2017.04)",
-        subtext: "来源:招聘网站 | 作者:天堂龙 | 公众号:苏州前端",
+        text: "测试海量点",
+        subtext: "测试海量点",
         left: 'center',
         top: 5,
         backgroundColor: "rgba(255,255,255,0.8)",
@@ -392,7 +427,7 @@ var option = {
     },
     legend: {
         orient: 'vertical',
-        bottom: '50',
+        bottom: '200px',
         left:"10",
         backgroundColor:"rgba(255,255,255,0.8)",
         data: labels.reverse(),

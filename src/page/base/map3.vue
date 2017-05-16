@@ -1,5 +1,9 @@
 <template>
-<div>map3</div>
+<div>
+	<h1>颜色</h1>
+	<input  placeholder="">
+
+</div>
 </template>
 
 <script>
