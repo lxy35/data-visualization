@@ -15,6 +15,12 @@ Vue.use(VueResource)
   // globally (in your main .js file)
 Vue.component('icon', Icon)
 Vue.config.productionTip = false
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-default/index.css'
+import DataTables from 'vue-data-tables'
+
+Vue.use(ElementUI)
+Vue.use(DataTables)
 
 /* eslint-disable no-new */
 new Vue({
