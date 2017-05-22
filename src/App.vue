@@ -44,9 +44,9 @@
       <router-view></router-view>
     </keep-alive>
     </div>
-    <div class="app-foot">
+    <!-- <div class="app-foot">
       <p>© 2017 wang & liu</p>
-    </div>
+    </div> -->
     <myDialog :isShow="isShowLoginDialog" @on-close="closeDialog('isShowLoginDialog')">
     <logForm @has-log="onSuccessLog"></logForm>
     </myDialog>
@@ -315,9 +315,6 @@ body {
   color: red;
   padding-left: 15px;
 }
-
-
-
 
 
 </style>
