@@ -2,7 +2,7 @@
    <div>
     <div class="app-head">
       <div class="app-head-inner">
-          <h1>数据可视化
+          <h1>数据探索式交互分析系统
             <span>v1.0</span>
           </h1>
           <div class="nav" v-if="username!==''">

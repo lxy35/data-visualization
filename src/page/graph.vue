@@ -5,7 +5,8 @@
         <div class="table-list-wrapper">
           <div class="item item-title">工作表</div>
           <ul>
-          <li class="item table-list-item"><a>外勤工作表</a></li>
+          <!-- <li class="item table-list-item"><a>外勤工作表</a></li> -->
+          <li class="item table-list-item"><a>国家孕前优生健康大数据</a></li>
           </ul>
         </div>
         <div class="field-wrapper">
@@ -16,14 +17,16 @@
           </div>
           <div class="measure-wrapper">
           <div class="item measure-name">度量</div>
-          <li class="item measure-item" draggable="true" @dragstart='drag2($event)' v-for="measure in measureList"><a :data-column="measure.t_column">{{measure.t_name}}</a></li>
+          <li class="item measure-item" draggable="true" @dragstart='drag2($event)' v-for="measure in measureList"><a :data-column="measure.t_column">{{measure.t_name}}</a>
+          </li>
           </div>
         </div>
       </div>
     </div>
     <div class="main-content" ref="mainContent" :style="{height:clientHeight+'px'}">
        <div class="drag-wrapper">
-         <div class="drag-item border-1px" @drop='drop1($event)' @dragover='allowDrop($event)' @dragleave='dragleave1($event)'><label class="drag-title-label">维度</label></div>
+         <div class="drag-item border-1px" @drop='drop1($event)' @dragover='allowDrop($event)' @dragleave='dragleave1($event)'><label class="drag-title-label">维度</label>
+         </div>
          <!-- <div class="drag-item border-1px" @drop='drop2($event)' @dragover='allowDrop($event)' @dragleave='dragleave2($event)'><label class="drag-title-label">对比</label></div> -->
          <div class="drag-item border-1px" @drop='drop3($event)' @dragover='allowDrop($event)' @dragleave='dragleave3($event)'><label class="drag-title-label">度量</label></div>
          <div class="drag-item border-1px" @drop='drop4($event)' @dragover='allowDrop($event)' @dragleave='dragleave4($event)'><label class="drag-title-label">次轴</label></div>
@@ -34,10 +37,13 @@
          <div class="graph">
           <!-- <v-column @optionConfig="_initOption" :optionUpdate="optionUpdate"></v-column> -->
          </div>
+        <!--  <div class="graph">
+           <img src="./pie.png" style="{width: 900px;height: 400px;}">
+         </div> -->
        </div>
     </div>
     <div class="right-bar" ref="rightBar" :style="{height:clientHeight+'px'}">
-      <v-rightbar :option="option" :type="type" @update-type="update" @update-option="updateOption"></v-rightbar>
+      <v-rightbar :baseUrl="baseUrl" :option="option" :type="type" :tableName="tableName" :searchmeasure="searchmeasure" :searchdimension="searchdimension" :searchmethods="searchmethods" @update-type="update" @update-option="updateOption"></v-rightbar>
     </div>
   </div>
 </template>
@@ -55,12 +61,14 @@ export default {
   data() {
     return {
       showFlag: true,
+      baseUrl: BASE_URL,
       clientHeight: (document.documentElement.clientHeight - 60) || (document.body.clientHeight - 60),
       dimension: '',
       dimensionDrag:'',
       measure: '',
       measureDrag: '',
       chartDate: {},
+      tableName: 'worker',
       myChart: {},
       option: {
         series: []
@@ -68,9 +76,9 @@ export default {
       // optionUpdate: {},
       dimensionList: [],
       measureList: [],
-      searchdimension: '',
-      searchmeasure: '',
-      searchmethods: '',
+      searchdimension: [],
+      searchmeasure: [],
+      searchmethods: 'count',
       measureValues: '',
       type: 1 //0柱状图，1堆叠柱状图，2条形图，3条形堆叠图，4折现图，5饼图，6堆叠面积图
     }
@@ -78,7 +86,7 @@ export default {
   // computed:{
   // },
   created() {
-    this.$http.get(BASE_URL+'all/columns?table_name=worker').then((response) => {
+    this.$http.get(BASE_URL+'all/columns?table_name='+this.tableName).then((response) => {
       var data = response.body;
       // console.log(response);
         for(let i in data) {
@@ -167,7 +175,7 @@ export default {
           }
         }
         this.searchdimension = dimensionValues;
-        this.getData('worker',this.type,this.searchdimension,this.searchmeasure,'count,count,count,count');
+        this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods);
     },
     drop2(event) {
         event.preventDefault();
@@ -184,7 +192,7 @@ export default {
           }
         }
         this.searchmeasure = measureValues;
-        this.getData('worker',this.type,this.searchdimension,this.searchmeasure,'count,count,count,count');
+        this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods);
     },
     drop4(event) {
         event.preventDefault();
@@ -201,7 +209,7 @@ export default {
        let dom = event.target.parentNode;
        console.log(dom);
        if(dom.nodeName.toLowerCase() == 'li'){
-          // $(dom).remove();
+          $(dom).remove();
        }
        // this.optionUpdate.xAxis = {};
        // this.myChart.setOption(this.option,true);
@@ -217,7 +225,7 @@ export default {
        event.preventDefault();
        let dom = event.target.parentNode;
        if(dom.nodeName.toLowerCase() == 'li'){
-          // $(dom).remove();
+          $(dom).remove();
        }
        // let dom = event.target.parentNode;
        // if(dom.className.indexOf('dimension-item') || dom.className.indexOf('measure-item')){
@@ -279,11 +287,16 @@ export default {
 @import "../components/graphBase/css/mixin.styl";
 
 .analysis
+  position: fixed;
+  top: 60px;
   width: 100%;
-  display: flex;
+  height: 100%;
+  // display: flex;
   .left-bar
-    flex: 0 0 200px;
+    // flex: 0 0 200px;
     width: 200px;
+    height: 100%;
+    float: left;
     background-color: #F5F5F5;
     color: #000;
     overflow-y: auto;
@@ -306,7 +319,12 @@ export default {
       padding-left: 10px;
       text-align: left;
   .main-content
-    flex: 1;
+    // flex: 1;
+    position: absolute;
+    top: 0px;
+    left: 200px;
+    right: 200px;
+    height: 100%;
     padding: 5px 15px;
     background-color: #F5F5F5;
     text-align: left;
@@ -341,13 +359,15 @@ export default {
       .graph
         // min-width: 500px;
         // min-height: 400px;
-        Width: 800px;
+        width: 800px;
         height: 400px;
         margin: 30px 15px 20px;
-        border: 1px solid #29A2E6;
+        border: 1px solid #29A2E6; 
   .right-bar
-    flex: 0 0 200px;
+    // flex: 0 0 200px;
     width: 200px;
+    height: 100%;
+    float: right;
     padding: 5px 5px 20px 5px;
     background-color: #F5F5F5;
     color: #000;

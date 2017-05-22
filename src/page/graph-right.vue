@@ -1,6 +1,6 @@
 <template>
   <div class="right-bar-inner">
-      <!-- <button @click="savaGraph">保存</button> -->
+      <button @click="savaGraph">保存</button>
   	  <div>
         <div class="right-title">图表标题</div>
         <input type="text" name="graph-title" style="width:100%">
@@ -74,14 +74,30 @@
 </template>
 
 <script>
+// import {doPost} from "../../../components/graphBase/js/ajaxUtils.js";
 export default {
   props: {
+    baseUrl: {
+      type: String
+    },
     option: {
       type: Object
     },
     type: {
       type: Number
-    } 
+    },
+    tableName: {
+      type: String
+    },
+    searchmeasure: {
+      type: Array
+    },
+    searchdimension: {
+      type: Array
+    },
+    searchmethods: {
+      type: String
+    }
   },
   data() {
     return {
@@ -96,7 +112,7 @@ export default {
     update(type){
        this.$emit('update-type',type);
     },
-     updateAxisTitle(title){
+    updateAxisTitle(title){
       console.log(this.option);
       this.newOption.yAxis.name = title;
       this.$emit('update-option',this.newOption);
@@ -104,6 +120,65 @@ export default {
     updateAxisUnit(unit){
       this.newOption.yAxis.name += '('+unit+')';
       this.$emit('update-option',this.newOption);
+    },
+    _createxmlHttpRequest() {
+      let xmlHttp ;
+      if (window.ActiveXObject) {
+        xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+      } else if (window.XMLHttpRequest) {
+        xmlHttp = new XMLHttpRequest();
+      }
+      return xmlHttp;  
+    },
+   _doGet(url, data) {
+      // 注意在传参数值的时候最好使用encodeURI处理一下，以防出现乱码 
+      let xmlHttp = this._createxmlHttpRequest();
+      xmlHttp.open("GET", url);
+      xmlHttp.send(data);
+      xmlHttp.onreadystatechange = function() {
+        if ((xmlHttp.readyState == 4) && (xmlHttp.status == 200)) {
+          console.log("ok"); //alert('success'); 
+        } else {
+          console.log('fail');
+        }
+      }
+    }, 
+    _doPost(url, data) {
+      // 注意在传参数值的时候最好使用encodeURI处理一下，以防出现乱码 
+      let xmlHttp = this._createxmlHttpRequest();
+      xmlHttp.open("POST", url);
+      xmlHttp.setRequestHeader("Content-Type", "application/json");
+      xmlHttp.send(data);
+      xmlHttp.onreadystatechange = function() {
+        if ((xmlHttp.readyState == 4) && (xmlHttp.status == 200)) {
+          console.log("ok");
+        } else {
+           //alert('fail');
+        }
+      }
+    },
+    savaGraph(){
+      let saveOptions = {
+        "gId": 36,
+        "tableName": this.tableName,
+        "dim": this.searchdimension.join(","),
+        "values": this.searchmeasure.join(","),
+        "methods": this.searchmethods,
+        "compare": '',
+        "options": JSON.stringify(this.option),
+        "type": this.type
+      }
+      var saveOptionsString = JSON.stringify(saveOptions);
+      // console.log(saveOptionsString);
+      this._doPost(this.baseUrl+'graph/save_graph', saveOptionsString);
+      // this.$http.post(this.baseUrl+'graph/save_graph',
+      //  {graph:{gId: 3,tableName:"worker"}}
+      //  ).then((response) => {
+      //   console.log(response);
+      //   // if(response.ok == true){
+      //   //   alert("保存成功");
+      //   // }
+      // });
     }
   },
   watch: {
