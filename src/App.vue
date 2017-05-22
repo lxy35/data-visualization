@@ -81,16 +81,16 @@ export default {
     },
     onSuccessLog (data) {
       this.username = data.username;
-      this.userId=data.userId;
-      window.userId=data.userId;
+      this.userId=data.userID;
+      window.userId=data.userID;
       window.username=data.username;
       this.closeDialog('isShowLoginDialog')
 
     },
    onSuccessReg (data) {
       this.username = data.username;
-            this.userId=data.userId
-window.userId=data.userId;
+            this.userId=data.userID
+window.userId=data.userID;
       window.username=data.username;
       this.closeDialog('isShowRegDialog')
 

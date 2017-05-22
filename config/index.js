@@ -30,11 +30,9 @@ module.exports = {
      proxyTable:  {
       // proxy all requests starting with /api to jsonplaceholder
       '/api': {
-        target: 'http://rapapi.org/mockjsdata/18594',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': ''
-        }
+        target:'http://127.0.0.1:3000/',
+        changeOrigin: true
+     
       }
   },
     // CSS Sourcemaps off by default because relative paths are "buggy"
