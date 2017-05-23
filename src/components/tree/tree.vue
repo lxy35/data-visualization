@@ -1,7 +1,7 @@
 <template>
 <div class="halo-tree">
   <div class="input">
-    <input type="text" v-model="search">
+    <input type="text" v-model="search" placeholder="搜索">
     <span class="icon search"></span>
   </div>
  <tree-node :treeData='store.root' :options="options" @handlecheckedChange="handlecheckedChange"></tree-node>

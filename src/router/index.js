@@ -15,7 +15,8 @@ import Map5 from '../page/base/map5.vue'
 
 import Map6 from '../page/base/map6.vue'
 
-
+import Test from '../page/test.vue'
+import Test2 from '../page/test2.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -70,6 +71,16 @@ export default new Router({
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardVue
+    },
+     {
+      path: '/test',
+      name: 'Test',
+      component: Test
+    },
+    {
+      path: '/test2',
+      name: 'Test2',
+      component: Test2
     }
 
   ]
