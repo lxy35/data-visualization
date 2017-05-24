@@ -308,11 +308,17 @@ export default {
             bmap.addControl(new BMap.ScaleControl());
         }
         ,
-        map2Click(val) {
-            console.log(typeof val) 
+        map2Click(val,which) {
             if(val instanceof Object) {
                 val=20
             }
+            if(this.drag_name==undefined||this.drag_name==null)
+            {
+                return alert("请选择维度");
+            }
+            else{
+                console.log(this.drag_name)
+                            which=this.drag_name;
             this.selected1=false;
             this.selected2=true;
             this.selected3=false;
@@ -324,10 +330,11 @@ export default {
             //数据
             let points=[];
             this.data.forEach(function(val, index) {
-                let arr=[val.lng, val.lat, val.count]
+                let arr=[val['经度'], val['纬度'],val[which]] 
                  points.push(arr)
             }
             )
+
              myChart.setOption( {
                 animation: false, bmap: {
                     center: [116.418261, 39.921984], zoom: 14, roam: true
@@ -349,6 +356,8 @@ export default {
             bmap.enableScrollWheelZoom(); // 允许滚轮缩放
             bmap.addControl(new BMap.NavigationControl());
             bmap.addControl(new BMap.ScaleControl());
+            }
+
         }
         ,
         map3Click() {
