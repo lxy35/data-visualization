@@ -65,13 +65,16 @@ export default {
     return {
       isShowLoginDialog:false,
       isShowRegDialog:false,
-      username: '',
-      userId:''
+      username:this.$store.state.user.userName
+,
+      userId:this.$store.state.user.userId
     }
   },
   methods:{
      logClick(){
       this.isShowLoginDialog=true;
+           
+
     },
      regClick(){
       this.isShowRegDialog=true;
@@ -79,18 +82,20 @@ export default {
     closeDialog(attr){
       this[attr]=false;
     },
-    onSuccessLog (data) {
-      this.username = data.username;
-      this.userId=data.userID;
-      window.userId=data.userID;
-      window.username=data.username;
+    onSuccessLog () {
+      // this.username = data.username;
+      // this.userId=data.userID;
+      // window.userId=data.userID;
+      // window.username=data.username;
+           
       this.closeDialog('isShowLoginDialog')
+      console.log(this.$store.state.user.userName)
 
     },
    onSuccessReg (data) {
       this.username = data.username;
             this.userId=data.userID
-window.userId=data.userID;
+      window.userId=data.userID;
       window.username=data.username;
       this.closeDialog('isShowRegDialog')
 

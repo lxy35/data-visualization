@@ -84,17 +84,20 @@ export default {
       else {
         this.errorText = ''
         console.log(this.usernameModel)
-        this.$http.get('api/login',{
-          params:{
-            username:this.usernameModel,
-            password:this.passwordModel
-          }
-        })
-        .then((res) => {
-          this.$emit('has-log', res.data)
-        }, (error) => {
-          console.log(error)
-        })
+        // this.$http.get('api/login',{
+        //   params:{
+        //     username:this.usernameModel,
+        //     password:this.passwordModel
+        //   }
+        // })
+        // .then((res) => {
+        //   this.$emit('has-log', res.data)
+        // }, (error) => {
+        //   console.log(error)
+        // })
+         this.$store.dispatch('validateUser')
+         this.$emit('has-log')
+
       }
     }
   }

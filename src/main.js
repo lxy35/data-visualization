@@ -18,13 +18,14 @@ Vue.config.productionTip = false
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import DataTables from 'vue-data-tables'
-
+import store from './store'
 Vue.use(ElementUI)
 Vue.use(DataTables)
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  store,
   router,
   template: '<App/>',
   components: {
