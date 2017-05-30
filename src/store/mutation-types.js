@@ -1,1 +1,2 @@
 export const VALIDATE_USER='VALIDATE_USER'
+export const CLEAR_USER='CLEAR_USER'
