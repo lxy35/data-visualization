@@ -13,11 +13,11 @@
           <div class="item item-title">字段</div>
           <div class="dimension-wrapper">
           <div class="item dimension-name">维度</div>
-            <li class="item dimension-item" draggable="true" @dragstart='drag1($event)' v-for="dimension in dimensionList"><a :data-column="dimension.t_column">{{dimension.t_name}}</a></li>
+            <li class="item dimension-item" draggable="true" @dragstart='drag1($event)' v-for="dimension in dimensionList"><a :data-column="dimension.t_name">{{dimension.t_name}}</a></li>
           </div>
           <div class="measure-wrapper">
           <div class="item measure-name">度量</div>
-          <li class="item measure-item" draggable="true" @dragstart='drag2($event)' v-for="measure in measureList"><a :data-column="measure.t_column">{{measure.t_name}}</a>
+          <li class="item measure-item" draggable="true" @dragstart='drag2($event)' v-for="measure in measureList"><a :data-column="measure.t_name" class="measure-name">{{measure.t_name}}</a>
           </li>
           </div>
         </div>
@@ -28,10 +28,13 @@
          <div class="drag-item border-1px" @drop='drop1($event)' @dragover='allowDrop($event)' @dragleave='dragleave1($event)'><label class="drag-title-label">维度</label>
          </div>
          <!-- <div class="drag-item border-1px" @drop='drop2($event)' @dragover='allowDrop($event)' @dragleave='dragleave2($event)'><label class="drag-title-label">对比</label></div> -->
-         <div class="drag-item border-1px" @drop='drop3($event)' @dragover='allowDrop($event)' @dragleave='dragleave3($event)'><label class="drag-title-label">度量</label></div>
+         <div class="drag-item border-1px" id="measure-list" @drop='drop3($event)' @dragover='allowDrop($event)' @dragleave='dragleave3($event)'><label class="drag-title-label">度量</label></div>
          <div class="drag-item border-1px" @drop='drop4($event)' @dragover='allowDrop($event)' @dragleave='dragleave4($event)'><label class="drag-title-label">次轴</label></div>
          <div class="drag-item border-1px" @drop='drop2($event)' @dragover='allowDrop($event)' @dragleave='dragleave($event)'><label class="drag-title-label">筛选器</label></div>
-         <div class="drag-item border-1px" @drop='drop2($event)' @dragover='allowDrop($event)' @dragleave='dragleave($event)'><label class="drag-title-label">颜色</label></div>
+         <div class="drag-item border-1px" @drop='drop2($event)' @dragover='allowDrop($event)' @dragleave='dragleave($event)'>
+         <label class="drag-title-label">颜色</label>
+         <colorPicker v-model="color" @change="headleChangeColor"></colorPicker>
+         </div>
        </div>
        <div class="graph-wrapper">
          <div class="graph">
@@ -49,9 +52,10 @@
 </template>
 
 <script>
-// import $ from 'jquery';
+import $ from 'jquery';
 import echarts from 'echarts';
 import rightBar from './graph-right';
+import colorPicker from '../components/plugin/vue-color-picker/colorPicker'
 
 // var BASE_URL ="http://124.127.117.136:8082/lxy/";
 // var BASE_URL ="http://101.201.115.167:8081/lxy/";
@@ -78,8 +82,8 @@ export default {
       measureList: [],
       searchdimension: [],
       searchmeasure: [],
-      searchmethods: 'count',
-      measureValues: '',
+      searchmethods: [],
+      color: '#f00',
       type: 1 //0柱状图，1堆叠柱状图，2条形图，3条形堆叠图，4折现图，5饼图，6堆叠面积图
     }
   },
@@ -130,11 +134,11 @@ export default {
     // _initOption(option){
     //   this.optionUpdate = option;
     // },
-    update(utype){ //根据左边修改图表type
-     this.type = utype;
+    update(utype) { //根据左边修改图表type
+      this.type = utype;
     },
     show(flag) {
-       this.showFlag = flag;
+      this.showFlag = flag;
     },
     getData(table,type,dimension,measure,methods){ //获取拖拽后的数据，并生成图表
       this.$http.get(BASE_URL+'chart/query?dimension='+dimension+'&table='+table+'&type='+type+'&values='+measure+'&methods='+methods).then((response) => {
@@ -150,6 +154,11 @@ export default {
       this.option = newOption;
       this.myChart.setOption(this.option,true);//true表示和之前的option合并
       this._init();
+    },
+    headleChangeColor (color) {
+      // console.log(`颜色值改变事件：${color}`);
+      console.log("11111");
+      console.log(color);
     },
     drag1(event) {
        this.dimension = event.currentTarget;
@@ -176,22 +185,54 @@ export default {
         }
         this.searchdimension = dimensionValues;
         this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods);
+
     },
     drop2(event) {
         event.preventDefault();
     },
     drop3(event) {
         event.preventDefault();
+        //申明方法DOM
+        let computeDisplay = document.createElement("i");
+        computeDisplay.innerText = '(求和)';
+        let computeSelect = document.createElement("div");
+        var searchMethodsSelect = this.searchmethods;
+    
+        computeSelect.setAttribute('class','computed');
+        computeSelect.innerHTML = '<ul index='+searchMethodsSelect.length+' class="measure-compute"><li><a data-method="sum">求和</a></li><li><a data-method="avg">平均数</a></li><li><a data-method="count">计数</a></li><li><a data-method="max">最大值</a></li><li><a data-method="min">最小值</a></li></ul>';
+        //将methods DOM加入拖拽DOM元素中
+        searchMethodsSelect.push('sum');
+        this.searchmeasure.push(this.measureDrag.getElementsByTagName('a')[0].getAttribute('data-column'));
+        this.measureDrag.getElementsByTagName("a")[0].appendChild(computeDisplay);
+        this.measureDrag.getElementsByTagName("a")[0].appendChild(computeSelect);
+
+        this.measureDrag.getElementsByTagName("a")[0].addEventListener('click', function(){
+              var lc = this.lastChild.lastChild;
+              lc.style.display='block';
+
+        });
+
         event.target.appendChild(this.measureDrag);
-        let measureDragList = event.target.getElementsByTagName('a');
-        var measureValues = [];
-        // var measureValues = new Map();
-        for(let i in measureDragList){
-          if(measureDragList[i].innerText != undefined){
-             measureValues.push(measureDragList[i].getAttribute('data-column'));
-          }
-        }
-        this.searchmeasure = measureValues;
+
+        var that = this;
+        $('.measure-compute li').on('click',function(){
+          var index = $(this).parent().attr("index");
+          //更新显示文字
+          let selectMethodText = $(this).find('a').text();
+          $(this).parents('div').prev('i').text('(' + selectMethodText + ')');
+          //保存对应methods
+          let selectMethod = $(this).find('a').attr('data-method');
+          $(this).parent().hide();
+          searchMethodsSelect[index] = selectMethod;
+          // console.log(searchMethodsSelect);
+          that.getData(that.tableName, that.type, that.searchdimension, that.searchmeasure, searchMethodsSelect);
+          return false;
+        });
+
+
+        this.searchmethods = searchMethodsSelect;
+        // console.log(this.searchmeasure);
+       
         this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods);
     },
     drop4(event) {
@@ -270,14 +311,15 @@ export default {
   watch: {
     type: {
       handler: function(){
-      this.getData('worker',this.type,this.searchdimension,this.searchmeasure,'count,count,count,count');
+      this.getData('worker',this.type,this.searchdimension,this.searchmeasure, this.searchmethods);
       },
       //深度观察
       deep: true
     }
   },
   components: {
-    'v-rightbar': rightBar
+    'v-rightbar': rightBar,
+    'colorPicker': colorPicker
     // 'v-column': column
   }
 }
@@ -307,7 +349,7 @@ export default {
       list-style: none;
       text-align: center;
       a
-      	color: #7E8C8D;
+        color: #7E8C8D;
       a:hover
         display: block;
         height: 40px;
@@ -341,6 +383,7 @@ export default {
           color: #000;
         .measure-item, .dimension-item
           // background-color: #29A2E6;
+          position: relative;
           background-color: #366797;
           display: inline-block;
           height: 30px;
@@ -353,6 +396,22 @@ export default {
           a
             color: #fff;
             font-weight: 700;
+            .computed
+              position: absolute;
+              top: 30px;
+              //display: none;
+              Width: 100%;
+              margin-left: -10px;
+              background-color: #fff;
+              z-index: 50;
+              .measure-compute
+                display:none;
+              a
+                display: block;
+                width: 100%;
+                color: #314871;
+              a:hover
+                background-color: #F5F5F5;
     .graph-wrapper
       min-width: 530px;
       min-height: 450px;
