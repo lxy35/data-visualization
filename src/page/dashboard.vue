@@ -108,9 +108,9 @@ export default {
     }
   },
   created() {
-  	this._getGraphInfo(35, '.graph-content-list');
-  	this._getGraphInfo(1, '.graph-content-list-1');
-  	this._getGraphInfo(36, '.graph-content-list-2');
+  	this._getGraphInfo(9, '.graph-content-list');
+  	this._getGraphInfo(10, '.graph-content-list-1');
+  	this._getGraphInfo(11, '.graph-content-list-2');
   },
   methods: {
     _deepCopy(obj) {
@@ -131,7 +131,7 @@ export default {
     _getGraphInfo(id, contentList) {
     	this.$http.get('http://localhost:8088/lxy/graph/get_info?graphId='+id).then((response) => {
         var data = response.body;
-        // console.log(response);
+        // console.log(data.g_options);
         this.option = this._deepCopy(JSON.parse(data.g_options));
         // this.option = this._deepCopy(data.g_options);
         // console.log(this.option);

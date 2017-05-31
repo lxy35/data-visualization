@@ -96,7 +96,7 @@ export default {
       type: Array
     },
     searchmethods: {
-      type: String
+      type: Array
     }
   },
   data() {
@@ -159,11 +159,11 @@ export default {
     },
     savaGraph(){
       let saveOptions = {
-        "gId": 36,
+        "gId": 11,
         "tableName": this.tableName,
         "dim": this.searchdimension.join(","),
         "values": this.searchmeasure.join(","),
-        "methods": this.searchmethods,
+        "methods": this.searchmethods.join(","),
         "compare": '',
         "options": JSON.stringify(this.option),
         "type": this.type
