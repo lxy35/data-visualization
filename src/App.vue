@@ -5,7 +5,7 @@
           <h1>数据探索式交互分析系统
             <span>v1.0</span>
           </h1>
-          <div class="nav" v-if="username!==''">
+          <div class="nav" v-if="userName!=null">
            <ul>
              <li class="border-right">
                  <router-link :to="{path:'dashboard'}" >
@@ -29,12 +29,12 @@
        
          <div class="head-nav">
           <ul class="nav-list">
-            <li> {{ username }}</li>
-            <li v-if="username!== ''" class="nav-pile">|</li>
-            <li v-if="username!== ''" @click="quit">退出</li>
-            <li v-if="username=== ''" @click="logClick">登录</li>
-            <li v-if="username===''" class="nav-pile">|</li>
-            <li v-if="username=== ''" @click="regClick">注册</li>
+            <li> {{ userName }}</li>
+            <li v-if="userName!= null" class="nav-pile">|</li>
+            <li v-if="userName!= null" @click="quit">退出</li>
+            <li v-if="userName== null" @click="logClick">登录</li>
+            <li v-if="userName==null" class="nav-pile">|</li>
+            <li v-if="userName==null" @click="regClick">注册</li>
           </ul>
         </div>
       </div>
@@ -65,13 +65,19 @@ export default {
     return {
       isShowLoginDialog:false,
       isShowRegDialog:false,
-      username: '',
-      userId:''
+    }
+  },
+  computed:{
+    userName(){
+      return this.$store.state.user.userName
+    },
+    userId(){
+      return this.$store.state.user.userId
     }
   },
   methods:{
      logClick(){
-      this.isShowLoginDialog=true;
+      this.isShowLoginDialog=true;     
     },
      regClick(){
       this.isShowRegDialog=true;
@@ -79,25 +85,18 @@ export default {
     closeDialog(attr){
       this[attr]=false;
     },
-    onSuccessLog (data) {
-      this.username = data.username;
-      this.userId=data.userID;
-      window.userId=data.userID;
-      window.username=data.username;
+    onSuccessLog () {
       this.closeDialog('isShowLoginDialog')
 
     },
    onSuccessReg (data) {
-      this.username = data.username;
-            this.userId=data.userID
-window.userId=data.userID;
-      window.username=data.username;
+      
       this.closeDialog('isShowRegDialog')
 
     },
     quit(){
-      this.username=""
-      this.userId=''
+      this.$store.dispatch('clearUser')
+      console.log(this.$store.state.user)
     }
   },
   components:{

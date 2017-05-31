@@ -82,26 +82,17 @@ export default {
         this.errorText = '部分选项未通过'
       }
       else {
-        this.errorText = ''
-        console.log(this.usernameModel)
-        this.$http.get('api/login',{
-          params:{
-            username:this.usernameModel,
-            password:this.passwordModel
-          }
-        })
-        .then((res) => {
-          this.$emit('has-log', res.data)
-        }, (error) => {
-          console.log(error)
-        })
+         this.errorText = ''
+         this.$store.dispatch('validateUser')
+         this.$emit('has-log')
+
       }
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+
 <style scoped>
 
 </style>
