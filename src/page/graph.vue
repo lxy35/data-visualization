@@ -89,6 +89,7 @@ export default {
       searchdimension: [],
       searchmeasure: [],
       searchmethods: [],
+      colors:[],
       color: '#f00',
       isShow: false,
       dragColorItem:'',
@@ -148,8 +149,8 @@ export default {
     show(flag) {
       this.showFlag = flag;
     },
-    getData(table,type,dimension,measure,methods){ //获取拖拽后的数据，并生成图表
-      this.$http.get(BASE_URL+'chart/query?dimension='+dimension+'&table='+table+'&type='+type+'&values='+measure+'&methods='+methods).then((response) => {
+    getData(table,type,dimension,measure,methods,colors){ //获取拖拽后的数据，并生成图表
+      this.$http.get(BASE_URL+'chart/query?dimension='+dimension+'&table='+table+'&type='+type+'&values='+measure+'&methods='+methods+'&colors='+colors).then((response) => {
           var data = response.body;
           this.option = this._deepCopy(data);
           // console.log(this.option);
@@ -165,21 +166,37 @@ export default {
     },
     headleChangeColor (color) {
 
-      this.color = color;
-      var series = this.option.series;
+      // this.color = color;
+      // var series = this.option.series;
 
-      if (series == null || series.length == 0) {
-        return;
+      // if (series == null || series.length == 0) {
+      //   return;
+      // }
+
+      // for( let item in series ){
+      //   console.log(series[item]);
+      //   if(series[item].name == this.dragColorItem){
+      //     series[item].color = [color];
+      //   }
+      // }
+
+      let hasSet = false;
+      for(let i in this.colors){
+          if(this.colors[i].indexOf(this.dragColorItem) >= 0){
+            this.colors[i] = this.dragColorItem + ":" + color.substr(1,color.length);
+            hasSet = true;
+          }
+      }
+      if(!hasSet){//去掉#
+        var t = this.dragColorItem + ":" + color.substr(1,color.length);
+        this.colors.push(t);
       }
 
-      for( let item in series ){
-        console.log(series[item]);
-        if(series[item].name == this.dragColorItem){
-          series[item].color = [color];
-        }
-      }
-      this.myChart.setOption(this.option,true);//true表示和之前的option合并
-      this._init();
+      console.log(this.colors);
+      this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods,this.colors);
+
+      //this.myChart.setOption(this.option,true);//true表示和之前的option合并
+      //this._init();
     },
     closeColorDialog() {
       this.isShow = false;
@@ -211,7 +228,7 @@ export default {
           }
         }
         this.searchdimension = dimensionValues;
-        this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods);
+        this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods,this.colors);
 
     },
     drop2(event) {
@@ -252,8 +269,9 @@ export default {
           let selectMethod = $(this).find('a').attr('data-method');
           $(this).parent().hide();
           searchMethodsSelect[index] = selectMethod;
+
           // console.log(searchMethodsSelect);
-          that.getData(that.tableName, that.type, that.searchdimension, that.searchmeasure, searchMethodsSelect);
+          that.getData(that.tableName, that.type, that.searchdimension, that.searchmeasure, searchMethodsSelect,that.colors);
           return false;
         });
 
@@ -261,7 +279,7 @@ export default {
         this.searchmethods = searchMethodsSelect;
         // console.log(this.searchmeasure);
        
-        this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods);
+        this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods,this.colors);
     },
     drop4(event) {
         event.preventDefault();
@@ -355,7 +373,7 @@ export default {
   watch: {
     type: {
       handler: function(){
-      this.getData('worker',this.type,this.searchdimension,this.searchmeasure, this.searchmethods);
+      this.getData('worker',this.type,this.searchdimension,this.searchmeasure, this.searchmethods,this.colors);
       },
       //深度观察
       deep: true
