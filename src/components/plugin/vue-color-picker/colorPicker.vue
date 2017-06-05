@@ -27,9 +27,9 @@
           <li
             v-for="color of tColor"
             v-bind:style="{ backgroundColor: color }"
+            v-on:click="updataValue(color)"
             v-on:mouseover="hoveColor = color"
             v-on:mouseout="hoveColor = null"
-            v-on:click="updataValue(color)"
           ></li>
         </ul>
         <ul class="bColor">
@@ -139,8 +139,6 @@ export default {
     },
     // 更新组件的值 value
     updataValue (value) {
-      console.log("=======");
-      console.log(value);
       this.$emit('input', value)
       this.$emit('change', value)
       this.openStatus = false
@@ -201,7 +199,7 @@ export default {
 
 <style lang="stylus" rel="stylesheet/stylus" scoped>
 .m-colorPicker{
-  position: relative; text-align: left; font-size: 14px; display: inline-block;
+  position: relative; text-align: left; font-size: 14px; display: inline-block; z-index: 40;
   ul,li,ol{ list-style: none; margin: 0; padding: 0; }
   input{ display: none; }
   .colorBtn{ width: 15px; height: 15px; }

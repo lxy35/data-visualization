@@ -8,14 +8,14 @@
       <div class="graph-type">
         <div class="right-title">图表类型</div>
         <div class="graph-content clearfix">
-          <i class="icon-bar" @click="update(0)">
+          <i class="icon-bar_1" @click="update(0)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">柱形图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-pie" @click="update(5)">
+          <i class="icon-pie_1" @click="update(5)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">饼图</div>
@@ -24,32 +24,63 @@
             </div>
           </i>
           <i class="icon-pie1_1"></i>
-          <i class="icon-column" @click="update(2)">
+          <i class="icon-column_1" @click="update(2)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">条形图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-funnel_1"></i>
-          <i class="icon-gauge_11"></i>
-          <i class="icon-graph_1"></i>
-          <i class="icon-line" @click="update(4)">
+          <i class="icon-funnel_1">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">漏斗图</div>
+              <div>1个维度,1个度量</div>
+              <div>0个维度,多个度量</div>
+            </div>
+          </i>
+          <i class="icon-gauge_1">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">计量图</div>
+              <div>0个维度,1个度量</div>
+            </div>
+          </i>
+          <i class="icon-graph_1">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">关系图</div>
+              <!-- <div>0个维度,1个度量</div> -->
+            </div>
+          </i>
+          <i class="icon-line_1" @click="update(4)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">折线图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-line1_1"></i>
-          <i class="icon-lineStack" @click="update(6)">
+          <i class="icon-line1_1">
             <div class="angle"></div>
             <div class="icon-bar-hover">
-              <div class="bar-title">堆积图</div>
+              <div class="bar-title">面积图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-scatter_1"></i>
+          <i class="icon-lineStack_1" @click="update(6)">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">面积堆积图</div>
+              <div>1个维度,1个或多个度量</div>
+            </div>
+          </i>
+          <i class="icon-scatter_1">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">散点图</div>
+              <div>0或多个维度,2个度量</div>
+            </div>
+          </i>
         </div>
       </div>
       <!-- <div class="right-title"> -->
@@ -105,8 +136,12 @@ export default {
       newType: this.type,
       axisDisplay: true,
       axisTitle: '',
-      axisUnit: ''
+      axisUnit: '',
+      dimensionLength: this.searchdimension.length,
+      measureLength: this.searchmeasure.length
     }
+  },
+  created() {
   },
   methods: {
     update(type){

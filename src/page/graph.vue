@@ -31,9 +31,9 @@
          <div class="drag-item border-1px" id="measure-list" @drop='drop3($event)' @dragover='allowDrop($event)' @dragleave='dragleave3($event)'><label class="drag-title-label">度量</label></div>
          <div class="drag-item border-1px" @drop='drop4($event)' @dragover='allowDrop($event)' @dragleave='dragleave4($event)'><label class="drag-title-label">次轴</label></div>
          <div class="drag-item border-1px" @drop='drop2($event)' @dragover='allowDrop($event)' @dragleave='dragleave($event)'><label class="drag-title-label">筛选器</label></div>
-         <div class="drag-item border-1px" @drop='drop2($event)' @dragover='allowDrop($event)' @dragleave='dragleave($event)'>
+         <div class="drag-item border-1px" @drop='drop6($event)' @dragover='allowDrop($event)' @dragleave='dragleave($event)'>
          <label class="drag-title-label">颜色</label>
-         <colorPicker v-model="color" @change="headleChangeColor"></colorPicker>
+         <!-- <colorPicker v-model="color" @change="headleChangeColor"></colorPicker> -->
          </div>
        </div>
        <div class="graph-wrapper">
@@ -48,6 +48,12 @@
     <div class="right-bar" ref="rightBar" :style="{height:clientHeight+'px'}">
       <v-rightbar :baseUrl="baseUrl" :option="option" :type="type" :tableName="tableName" :searchmeasure="searchmeasure" :searchdimension="searchdimension" :searchmethods="searchmethods" @update-type="update" @update-option="updateOption"></v-rightbar>
     </div>
+    <MyDialog :isShow="isShow" @on-close="closeColorDialog">
+        <div class="dialog dialog-content">
+            <span>{{dragColorItem}}</span>
+            <colorPicker v-model="color" @change="headleChangeColor"></colorPicker>
+        </div>
+    </MyDialog>
   </div>
 </template>
 
@@ -55,7 +61,8 @@
 import $ from 'jquery';
 import echarts from 'echarts';
 import rightBar from './graph-right';
-import colorPicker from '../components/plugin/vue-color-picker/colorPicker'
+import colorPicker from '../components/plugin/vue-color-picker/colorPicker';
+import MyDialog from '../components/base/dialog.vue';
 
 // var BASE_URL ="http://124.127.117.136:8082/lxy/";
 // var BASE_URL ="http://101.201.115.167:8081/lxy/";
@@ -68,9 +75,8 @@ export default {
       baseUrl: BASE_URL,
       clientHeight: (document.documentElement.clientHeight - 60) || (document.body.clientHeight - 60),
       dimension: '',
-      dimensionDrag:'',
       measure: '',
-      measureDrag: '',
+      dragContent: '',
       chartDate: {},
       tableName: 'worker',
       myChart: {},
@@ -84,6 +90,8 @@ export default {
       searchmeasure: [],
       searchmethods: [],
       color: '#f00',
+      isShow: false,
+      dragColorItem:'',
       type: 1 //0柱状图，1堆叠柱状图，2条形图，3条形堆叠图，4折现图，5饼图，6堆叠面积图
     }
   },
@@ -156,26 +164,45 @@ export default {
       this._init();
     },
     headleChangeColor (color) {
-      // console.log(`颜色值改变事件：${color}`);
-      console.log("11111");
-      console.log(color);
+
+      this.color = color;
+      var series = this.option.series;
+
+      if (series == null || series.length == 0) {
+        return;
+      }
+
+      for( let item in series ){
+        console.log(series[item]);
+        if(series[item].name == this.dragColorItem){
+          series[item].color = [color];
+        }
+      }
+      this.myChart.setOption(this.option,true);//true表示和之前的option合并
+      this._init();
+    },
+    closeColorDialog() {
+      this.isShow = false;
     },
     drag1(event) {
        this.dimension = event.currentTarget;
        //通过复制被拖拽节点，使原来的位置上仍保存节点
-       this.dimensionDrag = this.dimension.cloneNode(true);
+       this.dragContent = this.dimension.cloneNode(true);
     },
     drag2(event) {
        this.measure = event.currentTarget;
        //通过复制被拖拽节点，使原来的位置上仍保存节点
-       this.measureDrag = this.measure.cloneNode(true);
+       this.dragContent = this.measure.cloneNode(true);
        // let dt = event.dataTransfer;
        // dt.setData("Text", event.target.id);
        // dt.effectAllowed = "copy";
     },
     drop1(event) {
+        //放维度
         event.preventDefault();
-        event.target.appendChild(this.dimensionDrag);
+        if(this.dragContent){
+          event.target.appendChild(this.dragContent);
+        }
         let dimensionDragList = event.target.getElementsByTagName('a');
         var dimensionValues = [];
         for(let i in dimensionDragList){
@@ -191,6 +218,7 @@ export default {
         event.preventDefault();
     },
     drop3(event) {
+        //放度量
         event.preventDefault();
         //申明方法DOM
         let computeDisplay = document.createElement("i");
@@ -202,18 +230,18 @@ export default {
         computeSelect.innerHTML = '<ul index='+searchMethodsSelect.length+' class="measure-compute"><li><a data-method="sum">求和</a></li><li><a data-method="avg">平均数</a></li><li><a data-method="count">计数</a></li><li><a data-method="max">最大值</a></li><li><a data-method="min">最小值</a></li></ul>';
         //将methods DOM加入拖拽DOM元素中
         searchMethodsSelect.push('sum');
-        this.searchmeasure.push(this.measureDrag.getElementsByTagName('a')[0].getAttribute('data-column'));
-        this.measureDrag.getElementsByTagName("a")[0].appendChild(computeDisplay);
-        this.measureDrag.getElementsByTagName("a")[0].appendChild(computeSelect);
+        this.searchmeasure.push(this.dragContent.getElementsByTagName('a')[0].getAttribute('data-column'));
+        this.dragContent.getElementsByTagName("a")[0].appendChild(computeDisplay);
+        this.dragContent.getElementsByTagName("a")[0].appendChild(computeSelect);
 
-        this.measureDrag.getElementsByTagName("a")[0].addEventListener('click', function(){
+        this.dragContent.getElementsByTagName("a")[0].addEventListener('click', function(){
               var lc = this.lastChild.lastChild;
               lc.style.display='block';
 
         });
-
-        event.target.appendChild(this.measureDrag);
-
+        if(this.dragContent){
+          event.target.appendChild(this.dragContent);
+        }
         var that = this;
         $('.measure-compute li').on('click',function(){
           var index = $(this).parent().attr("index");
@@ -237,10 +265,26 @@ export default {
     },
     drop4(event) {
         event.preventDefault();
-        event.target.appendChild(this.measureDrag);
+        event.target.appendChild(this.dragContent);
+    },
+    drop6(event) {
+        event.preventDefault();
+
+        if(this.dragContent) {
+          event.target.appendChild(this.dragContent);
+        }
+        //保存获取颜色的name值
+        this.dragColorItem = $(this.dragContent).find('a').text();
+
+        this.isShow = true;
+        //利用对象是引用类型，使得在click函数中仍可访问isShow变量
+        var self = this;
+        $(this.dragContent).on('click', function() {
+          self.isShow = true;
+        });
     },
     allowDrop(event) {
-       event.preventDefault();
+        event.preventDefault();
        // let dt = event.dataTransfer;
        // dt.effectAllowed = "copy";
        // dt.dropEffect = "copy";
@@ -319,7 +363,8 @@ export default {
   },
   components: {
     'v-rightbar': rightBar,
-    'colorPicker': colorPicker
+    'colorPicker': colorPicker,
+    'MyDialog': MyDialog
     // 'v-column': column
   }
 }
@@ -432,4 +477,6 @@ export default {
     color: #000;
     overflow-y: auto;
     // overflow-x: hidden;
+  .dialog-content
+    min-height: 300px;
 </style>
