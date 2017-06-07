@@ -1,6 +1,6 @@
 <template>
   <div class="right-bar-inner">
-      <button @click="savaGraph">保存</button>
+      <div @click="savaGraph" class="save-graph">保存</div>
   	  <div>
         <div class="right-title">图表标题</div>
         <input type="text" name="graph-title" style="width:100%">
@@ -8,7 +8,14 @@
       <div class="graph-type">
         <div class="right-title">图表类型</div>
         <div class="graph-content clearfix">
-          <i class="icon-bar_1" @click="update(0)">
+          <i class="icon-bar_1" v-show="barShow">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">柱形图</div>
+              <div>1个维度,1个或多个度量</div>
+            </div>
+          </i>
+          <i class="icon-bar" @click="update(0)" v-show="barShow1">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">柱形图</div>
@@ -60,14 +67,14 @@
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-line1_1">
+          <i class="icon-line1_1" @click="update(6)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">面积图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-lineStack_1" @click="update(6)">
+          <i class="icon-lineStack_1">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">面积堆积图</div>
@@ -137,18 +144,25 @@ export default {
       axisDisplay: true,
       axisTitle: '',
       axisUnit: '',
-      dimensionLength: this.searchdimension.length,
-      measureLength: this.searchmeasure.length
+      dimensionLength: 0,
+      measureLength: 0,
+      barShow: true,
+      barShow1: false
     }
   },
   created() {
+    // this.dimensionLength = this.searchdimension.length;
+    // this.measureLength = this.searchmeasure.length;
+    // console.log(this.measureLength);
+  },
+  updated() {
   },
   methods: {
     update(type){
-       this.$emit('update-type',type);
+      this.$emit('update-type',type);
     },
     updateAxisTitle(title){
-      console.log(this.option);
+      // console.log(this.option);
       this.newOption.yAxis.name = title;
       this.$emit('update-option',this.newOption);
     },
@@ -237,6 +251,24 @@ export default {
         this.newOption = this.option;
       }
     }
+    // dimensionLength: {
+    //   handler: function(){
+    //     if(this.dimensionLength == 1 && this.measureLength >= 1) {
+    //       console.log("11111");
+    //       this.barShow = false;
+    //       this.barShow1 = true;
+    //     }
+    //   }
+    // },
+    // measureLength: {
+    //   handler: function(){
+    //     if(this.dimensionLength == 1 && this.measureLength >= 1) {
+    //       console.log("11111");
+    //       this.barShow = false;
+    //       this.barShow1 = true;
+    //     }
+    //   }
+    // }
   }
 }
 </script>
@@ -250,6 +282,16 @@ export default {
     color: #000;
     overflow-y: auto;
     // overflow-x: hidden;
+    .save-graph
+      background-color: #366797;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      border-radius: 3px;
+      cursor: pointer;
+      margin: 0 5px;
+      padding: 0px 10px;
+      color: #fff;
     .right-title
       height: 40px;
       line-height: 40px;

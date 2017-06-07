@@ -12,7 +12,8 @@
       v-model="html5Color"
       v-on:change="updataValue(html5Color)">
     <!-- 颜色色盘 -->
-    <div class="box" v-bind:class="{ open: openStatus }">
+    <!-- <div class="box" v-bind:class="{ open: openStatus }"> -->
+    <div class="box open">
       <div class="hd">
         <div class="colorView" v-bind:style="`background-color: ${showPanelColor}`"></div>
         <div class="defaultColor"

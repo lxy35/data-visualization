@@ -50,8 +50,14 @@
     </div>
     <MyDialog :isShow="isShow" @on-close="closeColorDialog">
         <div class="dialog dialog-content">
-            <span>{{dragColorItem}}</span>
-            <colorPicker v-model="color" @change="headleChangeColor"></colorPicker>
+          <div class="color-select-content">
+            <div class="color-left">
+              <span>{{dragColorItem}}</span>
+            </div>
+            <div class="color-right">
+              <colorPicker v-model="color" @change="headleChangeColor"></colorPicker>
+            </div>
+          </div>
         </div>
     </MyDialog>
   </div>
@@ -89,6 +95,7 @@ export default {
       searchdimension: [],
       searchmeasure: [],
       searchmethods: [],
+      searchcolor: [],
       colors:[],
       color: '#f00',
       isShow: false,
@@ -153,13 +160,11 @@ export default {
       this.$http.get(BASE_URL+'chart/query?dimension='+dimension+'&table='+table+'&type='+type+'&values='+measure+'&methods='+methods+'&colors='+colors).then((response) => {
           var data = response.body;
           this.option = this._deepCopy(data);
-          // console.log(this.option);
           this.myChart.setOption(this.option,true);//true表示和之前的option合并
           this._init();
         });
     },
     updateOption(newOption){
-      console.log(newOption);
       this.option = newOption;
       this.myChart.setOption(this.option,true);//true表示和之前的option合并
       this._init();
@@ -192,7 +197,7 @@ export default {
         this.colors.push(t);
       }
 
-      console.log(this.colors);
+      // console.log(this.colors);
       this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods,this.colors);
 
       //this.myChart.setOption(this.option,true);//true表示和之前的option合并
@@ -291,14 +296,17 @@ export default {
         if(this.dragContent) {
           event.target.appendChild(this.dragContent);
         }
+        //this.searchcolor为解决多个元素设置颜色问题
+        this.searchcolor.push(this.dragContent);
         //保存获取颜色的name值
         this.dragColorItem = $(this.dragContent).find('a').text();
 
         this.isShow = true;
         //利用对象是引用类型，使得在click函数中仍可访问isShow变量
         var self = this;
-        $(this.dragContent).on('click', function() {
+        $(this.searchcolor).on('click', function() {
           self.isShow = true;
+          self.dragColorItem = $(this).find('a').text();
         });
     },
     allowDrop(event) {
@@ -373,7 +381,7 @@ export default {
   watch: {
     type: {
       handler: function(){
-      this.getData('worker',this.type,this.searchdimension,this.searchmeasure, this.searchmethods,this.colors);
+        this.getData(this.tableName,this.type,this.searchdimension,this.searchmeasure, this.searchmethods,this.colors);
       },
       //深度观察
       deep: true
@@ -497,4 +505,16 @@ export default {
     // overflow-x: hidden;
   .dialog-content
     min-height: 300px;
+    min-width: 400px;
+    width: 30%;
+    .color-select-content
+      margin: 25px 40px;
+      .color-left
+        float: left;
+        margin-right: 30px;
+        padding-right: 30px;
+        min-height: 300px;
+        border-right: 5px solid #F5F5F5;
+      .color-right
+        margin-left: 10px;
 </style>
