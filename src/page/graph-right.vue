@@ -1,6 +1,6 @@
 <template>
   <div class="right-bar-inner">
-      <button @click="savaGraph">保存</button>
+      <div @click="savaGraph" class="save-graph">保存</div>
   	  <div>
         <div class="right-title">图表标题</div>
         <input type="text" name="graph-title" style="width:100%">
@@ -8,14 +8,21 @@
       <div class="graph-type">
         <div class="right-title">图表类型</div>
         <div class="graph-content clearfix">
-          <i class="icon-bar" @click="update(0)">
+          <i class="icon-bar_1" v-show="barShow">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">柱形图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-pie" @click="update(5)">
+          <i class="icon-bar" @click="update(0)" v-show="barShow1">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">柱形图</div>
+              <div>1个维度,1个或多个度量</div>
+            </div>
+          </i>
+          <i class="icon-pie_1" @click="update(5)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">饼图</div>
@@ -24,32 +31,63 @@
             </div>
           </i>
           <i class="icon-pie1_1"></i>
-          <i class="icon-column" @click="update(2)">
+          <i class="icon-column_1" @click="update(2)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">条形图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-funnel_1"></i>
-          <i class="icon-gauge_11"></i>
-          <i class="icon-graph_1"></i>
-          <i class="icon-line" @click="update(4)">
+          <i class="icon-funnel_1">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">漏斗图</div>
+              <div>1个维度,1个度量</div>
+              <div>0个维度,多个度量</div>
+            </div>
+          </i>
+          <i class="icon-gauge_1">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">计量图</div>
+              <div>0个维度,1个度量</div>
+            </div>
+          </i>
+          <i class="icon-graph_1">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">关系图</div>
+              <!-- <div>0个维度,1个度量</div> -->
+            </div>
+          </i>
+          <i class="icon-line_1" @click="update(4)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">折线图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-line1_1"></i>
-          <i class="icon-lineStack" @click="update(6)">
+          <i class="icon-line1_1" @click="update(6)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
-              <div class="bar-title">堆积图</div>
+              <div class="bar-title">面积图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-scatter_1"></i>
+          <i class="icon-lineStack_1">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">面积堆积图</div>
+              <div>1个维度,1个或多个度量</div>
+            </div>
+          </i>
+          <i class="icon-scatter_1">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">散点图</div>
+              <div>0或多个维度,2个度量</div>
+            </div>
+          </i>
         </div>
       </div>
       <!-- <div class="right-title"> -->
@@ -105,15 +143,26 @@ export default {
       newType: this.type,
       axisDisplay: true,
       axisTitle: '',
-      axisUnit: ''
+      axisUnit: '',
+      dimensionLength: 0,
+      measureLength: 0,
+      barShow: true,
+      barShow1: false
     }
+  },
+  created() {
+    // this.dimensionLength = this.searchdimension.length;
+    // this.measureLength = this.searchmeasure.length;
+    // console.log(this.measureLength);
+  },
+  updated() {
   },
   methods: {
     update(type){
-       this.$emit('update-type',type);
+      this.$emit('update-type',type);
     },
     updateAxisTitle(title){
-      console.log(this.option);
+      // console.log(this.option);
       this.newOption.yAxis.name = title;
       this.$emit('update-option',this.newOption);
     },
@@ -202,6 +251,24 @@ export default {
         this.newOption = this.option;
       }
     }
+    // dimensionLength: {
+    //   handler: function(){
+    //     if(this.dimensionLength == 1 && this.measureLength >= 1) {
+    //       console.log("11111");
+    //       this.barShow = false;
+    //       this.barShow1 = true;
+    //     }
+    //   }
+    // },
+    // measureLength: {
+    //   handler: function(){
+    //     if(this.dimensionLength == 1 && this.measureLength >= 1) {
+    //       console.log("11111");
+    //       this.barShow = false;
+    //       this.barShow1 = true;
+    //     }
+    //   }
+    // }
   }
 }
 </script>
@@ -215,6 +282,16 @@ export default {
     color: #000;
     overflow-y: auto;
     // overflow-x: hidden;
+    .save-graph
+      background-color: #366797;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      border-radius: 3px;
+      cursor: pointer;
+      margin: 0 5px;
+      padding: 0px 10px;
+      color: #fff;
     .right-title
       height: 40px;
       line-height: 40px;
