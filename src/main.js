@@ -21,7 +21,9 @@ import DataTables from 'vue-data-tables'
 import store from './store'
 Vue.use(ElementUI)
 Vue.use(DataTables)
+import VueGoodTable from 'vue-good-table';
 
+Vue.use(VueGoodTable);
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

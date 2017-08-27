@@ -28,8 +28,12 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Index',
-      component: IndexVue
+      redirect:'/index'
+    },
+    {
+      path:'/index',
+      name:'index',
+      component:IndexVue
     },
     {
       path: '/table',
