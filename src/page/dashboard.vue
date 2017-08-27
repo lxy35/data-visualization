@@ -2,22 +2,29 @@
 <!-- <img src="../assets/dashboard.png"  width="100%"> -->
   <div class="dashboard">
     <div class="left">
-  	<tree ref ='tree' :treeData="treeData" :options="options"  class="tree-1" @node-click='handleNode'/>
+  	     <ul  class="table-name">
+          <li><router-link to="/dashboard/table1" >
+             
+                 GD_BABY_SITUATION
+                 </router-link></li> 
+            <li><router-link to="/dashboard/table2" >
+                 GD_BASIC_INFO_DETAIL
+                 </router-link></li> 
+            <li><router-link to="/dashboard/table3" >
+                 GD_EVALUATE_RESULT
+                 </router-link></li> 
+         </ul>
   	</div>
     <div class="right">
-      <div class="graph-content-list">        
-      </div>
-      <div class="graph-content-list-1">        
-      </div>
-       <div class="graph-content-list-2">        
-      </div>
+      <keep-alive>
+      <router-view></router-view>
+      </keep-alive>
     </div>
   </div>
 </template>
 
 <script>
 import echarts from 'echarts';
-import Tree from '../components/tree/tree.vue'
 export default {
   name: 'dashboard',
   data() {
@@ -147,12 +154,18 @@ export default {
   		}
   	}
   },
-  components: {Tree}
+  components: {}
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="stylus" rel="stylesheet/stylus">
+.table-name
+  font-size 15px
+  height 40px
+  line-height 40px
+  padding 10px 10px 
+  background-color rgb(202,217,246)
 .dashboard
     position: fixed;
     top: 60px;
