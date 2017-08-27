@@ -8,19 +8,19 @@
           <div class="nav" v-if="userName!=null">
            <ul>
              <li class="border-right">
-                 <router-link :to="{path:'dashboard'}" >
+                 <router-link to="/dashboard" >
              <icon name="flag" scale="1" class="fa-icon"></icon>
                  仪表盘
                  </router-link>
              </li>
              <li class="border-right">
-                  <router-link :to="{path:'table'}"  class=""><icon name="flag" scale="1" class="fa-icon"></icon>工作表</router-link>
+                  <router-link to="/table"  class=""><icon name="flag" scale="1" class="fa-icon"></icon>工作表</router-link>
              </li>
              <li class="border-right">
-                <router-link :to="{path:'graph'}"  class=""><icon name="flag" scale="1" class="fa-icon"></icon>图表分析</router-link>
+                <router-link to="/graph"  class=""><icon name="flag" scale="1" class="fa-icon"></icon>图表分析</router-link>
              </li>
              <li >
-                <router-link :to="{path:'/map'}"  ><icon name="flag" scale="1" ></Icon>地图分析</router-link>
+                <router-link to="/map"  ><icon name="flag" scale="1" ></Icon>地图分析</router-link>
              </li>
 
            </ul>
