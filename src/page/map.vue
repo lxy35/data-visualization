@@ -1,17 +1,7 @@
 <template>
 <div>
-    <MyDialog :isShow="isShow">
-        <div class="dialog">
-            <h1>添加图表</h1>
-            <h1>选择工作表</h1>
-            <p>
-                工作表名称：<span>{{table_name}}</span>
-            </p>
-            <tree ref='tree' :treeData="tableOption" :options="options" @node-click='handleNode' />
-            <button @click="showDialog">确定</button>
-        </div>
-    </MyDialog>
-    <div class="map" v-show="!isShow">
+
+    <div class="map" >
         <div class="map-left">
             <div class="map-left-table">
                 <h1> 工作表 </h1>
@@ -114,47 +104,11 @@ export default {
         return {
             // 地图名称
             title:'',
-            //是否创建地图
-            isShow:true, 
+          
             //工作表名称
-            table_name:'',
+            table_name:'GD_BABY_SITUATION',
             //选择工作表数据
-            tableOption:[
-        {      
-          id: 'folder2',
-          label: '本地生活数据',
-          open: true,
-          checked: false,
-          parentId: null,
-          visible: true,
-          searched: false,
-          children: [
-            {
-              id: 'table1',
-              label: '美食类商铺数据',
-              checked: false,
-              parentId: 5,
-              searched: true,
-              visible: true
-            },
-            {
-              id:'table2',
-              label: '北京校区信息数据',
-              checked: false,
-              parentId: 5,
-              searched: true,
-              visible: true
-            },{
-              id: 'table3',
-              label: '居民收支数据',
-              checked: false,
-              parentId:5,
-              searched: true,
-              visible: true
-            }
-          ]
-        }
-      ], 
+            tableOption:null,
          //工作表选项
             options: {
                 showCheckbox: false,
@@ -183,20 +137,7 @@ export default {
         }
     },
  mounted() {
-    //获取工作表选项
-        this.$http.get('api/table/list')
-        .then((res) => {
-            
-        }, (error) => {
-          console.log(error)
-        });
-    //获取工作表数据
-        this.$http.get('api/table/data')
-        .then((res) => {
-            this.data=res.data.data;
-        }, (error) => {
-          console.log(error)
-        });
+   
     //根据获取的数据初始化地图
         this.init()
     }

@@ -1,43 +1,27 @@
 <template>
   <div class="dashboard">
   	<div class="left">
-  	<tree ref ='tree' :treeData="treeData" :options="options"  class="tree-1" @node-click='handleNode'/>
-
+         <ul  class="table-name">
+          <li><router-link to="" >
+             
+                 GD_BABY_SITUATION
+                 </router-link></li> 
+            <li><router-link to="" >
+                 GD_BASIC_INFO_DETAIL
+                 </router-link></li> 
+            <li><router-link to="" >
+                 GD_EVALUATE_RESULT
+                 </router-link></li> 
+         </ul>
   	</div>
   	<div class="right">
   	<h1>{{table_title}}</h1>
-<template>
-  <data-tables
-    :data='tableData' :has-action-col="hasActionCol" :pagination-def="pagiDef">
-    <el-table-column prop="city"
-      label="城市"
-      sortable="custom">
-    </el-table-column>
-    <el-table-column
-      prop="area"
-      label="地区"
-      sortable="custom">
-    </el-table-column>
-      <el-table-column prop="name"
-      label="店铺名"
-      sortable="custom">
-    </el-table-column>
-    <el-table-column
-      prop="pay"
-      label="人均消费"
-      sortable="custom">
-    </el-table-column>
-      <el-table-column prop="lat"
-      label="经度"
-      sortable="custom">
-    </el-table-column>
-    <el-table-column
-      prop="lng"
-      label="纬度"
-      sortable="custom">
-    </el-table-column>
-  </data-tables>
-</template>
+<vue-good-table
+      title=""
+      :columns="columns"
+      :rows="rows"
+      :paginate="true"
+      :lineNumbers="true"/>
   		</div>
   		</div>
 </template>
@@ -45,226 +29,61 @@
 <script>
 import Tree from '../components/tree/tree.vue'
 import $ from 'jquery'
-export default {
-  name: 'hello',
-  methods:{
-  	handleNode:function(node){
-  		if(node.children==undefined||node.children==[])
-  		{
-  			  this.table_title=node.label;
 
-  		}
-  	}
-  },
-  data () {
-    return {
-      pagiDef:{
-        layoyt:'next',
-        pageSize:8,
-        pageSizes:[],
-        small:true
-      },
-      tableData:[{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      },{
-        city:'北京',
-        area:'北京',
-        name:'胡大',
-        pay:'400',
-        lat:'123',
-        lng:'111'
-      }],
-      hasActionCol:false,
-      toolBarDef:'',
-    	table_title:'人口',
-      options: {
-        showCheckbox: false,
-        search: {
-          useInitial: true,
-          useEnglish: false,
-          customFilter: null
-        }
-      },
-      treeData: [
-        {
-          id: 'folder1',
-          label: '人口数据',
-          open: true,
-          checked: false,
-          parentId: null,
-          visible: true,
-          searched: false,
-          children: [
-            {
-              id: 'table1',
-              label: '人口',
-              checked: false,
-              parentId: 1,
-              searched: true,
-              visible: true
-            },
- 			{
-              id: 'table2',
-              label: '人口',
-              checked: false,
-              parentId: 1,
-              searched: true,
-              visible: true
-            },{
-              id: 'table3',
-              label: '人口',
-              checked: false,
-              parentId: 1,
-              searched: true,
-              visible: true
-            }
-          ]
+var data=null
+     $.ajax({
+        url: " http://master.hadoop:7070/kylin/api/query",
+        type: "POST",
+        data: '{"sql":"select * from GD_BABY_SITUATION;","offset":0,"limit":50,"acceptPartial":true,"project":"jishengwei_by_qjk"}',
+        dataType: "json",
+          headers: {
+            'Authorization': "Basic QURNSU46S1lMSU4=",
+            'Content-Type': 'application/json;charset=utf-8'
         },
-                {
-          id: 'folder2',
-          label: '本地生活数据',
-          open: true,
-          checked: false,
-          parentId: null,
-          visible: true,
-          searched: false,
-          children: [
-            {
-              id: 'table1',
-              label: '美食类商铺数据',
-              checked: false,
-              parentId: 5,
-              searched: true,
-              visible: true
-            },
- 			{
-              id:'table2',
-              label: '北京校区信息数据',
-              checked: false,
-              parentId: 5,
-              searched: true,
-              visible: true
-            },{
-              id: 'table3',
-              label: '居民收支数据',
-              checked: false,
-              parentId:5,
-              searched: true,
-              visible: true
-            }
-          ]
+        async:false,
+        success:function(fin)
+        {
+          console.log(fin)
+          data=fin
         }
-
-      ]
-    }
+    });
+  var columns=data.columnMetas.map((val,index)=>{
+    var o={}
+    o.label=val.name
+    o.field=val.name
+    return o
+  })
+  var rows=data.results.map((val,index)=>{
+    var o={}
+    o[columns[0].label]=val[0]
+    o[columns[1].label]=val[1]
+    o[columns[2].label]=val[2]
+    o[columns[3].label]=val[3]
+    o[columns[4].label]=val[4]
+    o[columns[5].label]=val[5]
+    o[columns[6].label]=val[6]
+    o[columns[7].label]=val[7]
+    return o
+  })
+  console.log(rows)
+export default {
+  name: 'test',
+  data(){
+    return {
+      columns,
+      rows,
+    };
   },
-  components: {Tree}
-}
+};
 </script>
 <style scoped>
+.table-name
+ {font-size:15px;
+  height:40px;
+  line-height:40px;
+  padding :10px 10px; 
+  background-color:rgb(202,217,246)}
+
 	.dashboard{
 		position: fixed;
     top: 60px;
