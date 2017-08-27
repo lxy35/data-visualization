@@ -44,6 +44,7 @@
 
 <script>
 import Tree from '../components/tree/tree.vue'
+import $ from 'jquery'
 export default {
   name: 'hello',
   methods:{

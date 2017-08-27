@@ -17,6 +17,10 @@ import Map6 from '../page/base/map6.vue'
 
 import Test from '../page/test.vue'
 import Test2 from '../page/test2.vue'
+
+import Table1 from '../page/table1.vue'
+import Table2 from '../page/table2.vue'
+import Table3 from '../page/table3.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -70,7 +74,19 @@ export default new Router({
      {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardVue
+      component: DashboardVue,
+      children:[{
+        path:'table1',
+        component:Table1
+      },
+      {
+        path:'table2',
+        component:Table2
+      },
+      {
+        path:'table3',
+        component:Table3
+      }]
     },
      {
       path: '/test',
