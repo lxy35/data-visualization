@@ -3,18 +3,18 @@
       <div @click="savaGraph" class="save-graph">保存</div>
   	  <div>
         <div class="right-title">图表标题</div>
-        <input type="text" name="graph-title" style="width:100%">
+        <input type="text" name="graph-title" style="width:100%" v-model="graphTitle" @blur="updateGraphTitle(graphTitle)">
       </div>
       <div class="graph-type">
         <div class="right-title">图表类型</div>
         <div class="graph-content clearfix">
-          <i class="icon-bar_1" v-show="barShow">
+         <!--  <i class="icon-bar_1" v-show="barShow">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">柱形图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
-          </i>
+          </i> -->
           <i class="icon-bar" @click="update(0)" v-show="barShow1">
             <div class="angle"></div>
             <div class="icon-bar-hover">
@@ -22,16 +22,16 @@
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-pie_1" @click="update(5)">
+          <i class="icon-pie" @click="update(5)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">饼图</div>
-              <div>1个维度,1个度量</div>
-              <div>0个维度,多个度量</div>
+              <div>0或1个维度,多个度量</div>
+              <!-- <div>0个维度,多个度量</div> -->
             </div>
           </i>
           <i class="icon-pie1_1"></i>
-          <i class="icon-column_1" @click="update(2)">
+          <i class="icon-column" @click="update(2)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">条形图</div>
@@ -43,7 +43,7 @@
             <div class="icon-bar-hover">
               <div class="bar-title">漏斗图</div>
               <div>1个维度,1个度量</div>
-              <div>0个维度,多个度量</div>
+              <!-- <div>0个维度,多个度量</div> -->
             </div>
           </i>
           <i class="icon-gauge_1">
@@ -60,21 +60,21 @@
               <!-- <div>0个维度,1个度量</div> -->
             </div>
           </i>
-          <i class="icon-line_1" @click="update(4)">
+          <i class="icon-line" @click="update(4)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">折线图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-line1_1" @click="update(6)">
+          <i class="icon-line1" @click="update(6)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">面积图</div>
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-lineStack_1">
+          <i class="icon-lineStack">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">面积堆积图</div>
@@ -88,6 +88,20 @@
               <div>0或多个维度,2个度量</div>
             </div>
           </i>
+          <i class="icon-radar_1" @click="update(7)">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">雷达图</div>
+              <div>1个维度,多个度量</div>
+            </div>
+          </i>
+          <i class="icon-heatmap" @click="update(10)">
+            <div class="angle"></div>
+            <div class="icon-bar-hover">
+              <div class="bar-title">热力图</div>
+              <div>2个维度,1个度量</div>
+            </div>
+          </i>
         </div>
       </div>
       <!-- <div class="right-title"> -->
@@ -95,7 +109,7 @@
       <!-- </div> -->
       <div class="axis" v-show="axisDisplay">
         <div class="right-title">坐标轴</div>
-        <div class="right-title">标题<input type="text" name="axis-title" style="width:75%" v-model="axisTitle" @blur="updateAxisTitle(axisTitle)"></div>
+        <div class="right-title">标题<input type="text" name="axis-title" style="width:75%" v-model="axisTitle" @blur="updateAxisTitle(axisTitle)" value="axisTitle"></div>
         <div class="right-title">单位<input type="text" name="unit" style="width:75%" v-model="axisUnit" @blur="updateAxisUnit(axisUnit)"></div>
         <div class="right-title">最大值<input type="text" name="" style="width:45%">
         <input type="checkbox" name="">自动</div>
@@ -141,16 +155,18 @@ export default {
     return {
       newOption: this.option,
       newType: this.type,
+      graphTitle: '',
       axisDisplay: true,
       axisTitle: '',
       axisUnit: '',
       dimensionLength: 0,
       measureLength: 0,
       barShow: true,
-      barShow1: false
+      barShow1: true
     }
   },
   created() {
+    // this.axisTitle = this.option.yAxis.name;
     // this.dimensionLength = this.searchdimension.length;
     // this.measureLength = this.searchmeasure.length;
     // console.log(this.measureLength);
@@ -161,13 +177,26 @@ export default {
     update(type){
       this.$emit('update-type',type);
     },
+    updateGraphTitle(graphTitle){
+      this.newOption.title.text = graphTitle;
+      this.$emit('update-option',this.newOption);
+    },
     updateAxisTitle(title){
       // console.log(this.option);
       this.newOption.yAxis.name = title;
       this.$emit('update-option',this.newOption);
     },
     updateAxisUnit(unit){
-      this.newOption.yAxis.name += '('+unit+')';
+      let pattern = new RegExp("\\(.+\\)");
+      console.log(unit);
+      if(pattern.test(this.newOption.yAxis.name)){
+        console.log(11111);
+        console.log(this.newOption.yAxis.name);
+        this.newOption.yAxis.name.replace(pattern, '('+unit+')');
+      } else {
+        console.log(222222);
+        this.newOption.yAxis.name += '('+unit+')';
+      }     
       this.$emit('update-option',this.newOption);
     },
     _createxmlHttpRequest() {
@@ -208,7 +237,7 @@ export default {
     },
     savaGraph(){
       let saveOptions = {
-        "gId": 11,
+        "gId": 0,
         "tableName": this.tableName,
         "dim": this.searchdimension.join(","),
         "values": this.searchmeasure.join(","),

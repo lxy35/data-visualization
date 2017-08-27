@@ -6,7 +6,7 @@
           <div class="item item-title">工作表</div>
           <ul>
           <!-- <li class="item table-list-item"><a>外勤工作表</a></li> -->
-          <li class="item table-list-item"><a>国家孕前优生健康大数据</a></li>
+          <li class="item table-list-item"><a>{{tableName}}</a></li>
           </ul>
         </div>
         <div class="field-wrapper">
@@ -30,7 +30,7 @@
          <!-- <div class="drag-item border-1px" @drop='drop2($event)' @dragover='allowDrop($event)' @dragleave='dragleave2($event)'><label class="drag-title-label">对比</label></div> -->
          <div class="drag-item border-1px" id="measure-list" @drop='drop3($event)' @dragover='allowDrop($event)' @dragleave='dragleave3($event)'><label class="drag-title-label">度量</label></div>
          <div class="drag-item border-1px" @drop='drop4($event)' @dragover='allowDrop($event)' @dragleave='dragleave4($event)'><label class="drag-title-label">次轴</label></div>
-         <div class="drag-item border-1px" @drop='drop2($event)' @dragover='allowDrop($event)' @dragleave='dragleave($event)'><label class="drag-title-label">筛选器</label></div>
+         <div class="drag-item border-1px" @drop='drop5($event)' @dragover='allowDrop($event)' @dragleave='dragleave($event)'><label class="drag-title-label">筛选器</label></div>
          <div class="drag-item border-1px" @drop='drop6($event)' @dragover='allowDrop($event)' @dragleave='dragleave($event)'>
          <label class="drag-title-label">颜色</label>
          <!-- <colorPicker v-model="color" @change="headleChangeColor"></colorPicker> -->
@@ -48,6 +48,36 @@
     <div class="right-bar" ref="rightBar" :style="{height:clientHeight+'px'}">
       <v-rightbar :baseUrl="baseUrl" :option="option" :type="type" :tableName="tableName" :searchmeasure="searchmeasure" :searchdimension="searchdimension" :searchmethods="searchmethods" @update-type="update" @update-option="updateOption"></v-rightbar>
     </div>
+    <MyDialog :isShow="isShowFilter" @on-close="closeFilterDialog">
+        <div class="dialog dialog-content">
+          筛选器
+          <div class="filter-content">
+            筛选条件：
+            <div class="filter-detail">
+              <div>
+                <select class="form-select" v-model="selected" @change="updateFilter">
+                  <option value="0">区间</option>
+                  <option value="=">等于</option>
+                  <option value="!=">不等于</option>
+                  <option value=">">大于</option>
+                  <option value="<">小于</option>
+                  <option value=">=">大于等于</option>
+                  <option value="<=">小于等于</option>
+                </select>
+                <input type="" name="" class="select-input" v-show="commonSelect" v-model="filterCount">
+                <div class="section-content" v-show="sectionSelect">
+                  <input type="" name="" v-model="filterCount">
+                  <span>~</span>
+                  <input type="" name="" v-model="filterCount1">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="button-content">
+            <span @click="filterSelect">确定</span><span>取消</span>
+          </div>
+        </div>
+    </MyDialog>
     <MyDialog :isShow="isShow" @on-close="closeColorDialog">
         <div class="dialog dialog-content">
           <div class="color-select-content">
@@ -71,7 +101,7 @@ import colorPicker from '../components/plugin/vue-color-picker/colorPicker';
 import MyDialog from '../components/base/dialog.vue';
 
 // var BASE_URL ="http://124.127.117.136:8082/lxy/";
-// var BASE_URL ="http://101.201.115.167:8081/lxy/";
+// var BASE_URL ="http://10.108.211.136:3306/jishengwei";
 var  BASE_URL ="http://127.0.0.1:8088/lxy/";
 
 export default {
@@ -84,7 +114,8 @@ export default {
       measure: '',
       dragContent: '',
       chartDate: {},
-      tableName: 'worker',
+      // tableName: 'worker',
+      tableName: 'GD_BABY_SITUATION',
       myChart: {},
       option: {
         series: []
@@ -94,19 +125,29 @@ export default {
       measureList: [],
       searchdimension: [],
       searchmeasure: [],
+      searchmeasure2: [],
       searchmethods: [],
+      searchmethods2: [],
       searchcolor: [],
       colors:[],
       color: '#f00',
       isShow: false,
+      isShowFilter: false,
       dragColorItem:'',
-      type: 1 //0柱状图，1堆叠柱状图，2条形图，3条形堆叠图，4折现图，5饼图，6堆叠面积图
+      sectionSelect: true,
+      commonSelect: false,
+      selected: 0,
+      filterName: '',
+      filterCount: 0,
+      filterCount1: 0,
+      filterCondition: '',
+      type: 0 //0柱状图，1堆叠柱状图，2条形图，3条形堆叠图，4折现图，5饼图，6堆叠面积图，7雷达图，10笛卡尔积热力图（两个维度一个度量），13漏斗图（一个维度一个度量）
     }
   },
   // computed:{
   // },
   created() {
-    this.$http.get(BASE_URL+'all/columns?table_name='+this.tableName).then((response) => {
+    this.$http.get(BASE_URL+'all/columns?flag=kylin&table_name='+this.tableName).then((response) => {
       var data = response.body;
       // console.log(response);
         for(let i in data) {
@@ -156,18 +197,43 @@ export default {
     show(flag) {
       this.showFlag = flag;
     },
-    getData(table,type,dimension,measure,methods,colors){ //获取拖拽后的数据，并生成图表
-      this.$http.get(BASE_URL+'chart/query?dimension='+dimension+'&table='+table+'&type='+type+'&values='+measure+'&methods='+methods+'&colors='+colors).then((response) => {
+    getData(table,type,dimension,measure,methods,colors,measure2,methods2,filterCondition){ //获取拖拽后的数据，并生成图表
+      this.$http.get(BASE_URL+'chart/query?dimension='+dimension+'&table='+table+'&type='+type+'&values='+measure+'&methods='+methods+'&colors='+colors+'&values2='+measure2+'&methods2='+methods2+'&having='+filterCondition).then((response) => {
           var data = response.body;
           this.option = this._deepCopy(data);
+         console.log("======");
+          console.log(this.option); 
           this.myChart.setOption(this.option,true);//true表示和之前的option合并
           this._init();
         });
     },
     updateOption(newOption){
       this.option = newOption;
+      console.log(this.option);
       this.myChart.setOption(this.option,true);//true表示和之前的option合并
       this._init();
+    },
+    updateFilter(){
+      if(this.selected === 0) {
+        this.sectionSelect = true;
+        this.commonSelect = false;
+      } else {
+        this.sectionSelect = false;
+        this.commonSelect = true;
+      }
+    },
+    filterSelect(){
+      if(this.selected === 0) {
+        this.filterCondition += (','+this.filterName + '>' + this.filterCount);
+        this.filterCondition += (','+this.filterName + '<' + this.filterCount1);
+      } else {
+        this.filterCondition += (','+this.filterName + this.selected + this.filterCount);
+      }
+      if(this.filterCondition.substr(0,1) == ','){
+        this.filterCondition = this.filterCondition.substr(1);
+      }
+      this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods,this.colors, this.searchmeasure2, this.searchmethods2, this.filterCondition);
+      this.isShowFilter = false;    
     },
     headleChangeColor (color) {
 
@@ -198,13 +264,16 @@ export default {
       }
 
       // console.log(this.colors);
-      this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods,this.colors);
+      this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods,this.colors, this.searchmeasure2, this.searchmethods2, this.filterCondition);
 
       //this.myChart.setOption(this.option,true);//true表示和之前的option合并
       //this._init();
     },
     closeColorDialog() {
       this.isShow = false;
+    },
+    closeFilterDialog() {
+      this.isShowFilter = false;
     },
     drag1(event) {
        this.dimension = event.currentTarget;
@@ -233,7 +302,7 @@ export default {
           }
         }
         this.searchdimension = dimensionValues;
-        this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods,this.colors);
+        this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods,this.colors, this.searchmeasure2, this.searchmethods2, this.filterCondition);
 
     },
     drop2(event) {
@@ -276,7 +345,7 @@ export default {
           searchMethodsSelect[index] = selectMethod;
 
           // console.log(searchMethodsSelect);
-          that.getData(that.tableName, that.type, that.searchdimension, that.searchmeasure, searchMethodsSelect,that.colors);
+          that.getData(that.tableName, that.type, that.searchdimension, that.searchmeasure, searchMethodsSelect,that.colors, that.searchmeasure2, that.searchmethods2, that.filterCondition);
           return false;
         });
 
@@ -284,11 +353,61 @@ export default {
         this.searchmethods = searchMethodsSelect;
         // console.log(this.searchmeasure);
        
-        this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods,this.colors);
+        this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods,this.colors, this.searchmeasure2, this.searchmethods2, this.filterCondition);
     },
     drop4(event) {
         event.preventDefault();
+        //申明方法DOM
+        let computeDisplay = document.createElement("i");
+        computeDisplay.innerText = '(求和)';
+        let computeSelect = document.createElement("div");
+        var searchMethodsSelect2 = this.searchmethods2;
+    
+        computeSelect.setAttribute('class','computed');
+        computeSelect.innerHTML = '<ul index='+searchMethodsSelect2.length+' class="measure-compute"><li><a data-method="sum">求和</a></li><li><a data-method="avg">平均数</a></li><li><a data-method="count">计数</a></li><li><a data-method="max">最大值</a></li><li><a data-method="min">最小值</a></li></ul>';
+        //将methods DOM加入拖拽DOM元素中
+        searchMethodsSelect2.push('sum');
+        this.searchmeasure2.push(this.dragContent.getElementsByTagName('a')[0].getAttribute('data-column'));
+        this.dragContent.getElementsByTagName("a")[0].appendChild(computeDisplay);
+        this.dragContent.getElementsByTagName("a")[0].appendChild(computeSelect);
+
+        this.dragContent.getElementsByTagName("a")[0].addEventListener('click', function(){
+              var lc = this.lastChild.lastChild;
+              lc.style.display='block';
+
+        });
+        if(this.dragContent){
+          event.target.appendChild(this.dragContent);
+        }
+        var that2 = this;
+        $('.measure-compute li').on('click',function(){
+          var index = $(this).parent().attr("index");
+          //更新显示文字
+          let selectMethodText = $(this).find('a').text();
+          $(this).parents('div').prev('i').text('(' + selectMethodText + ')');
+          //保存对应methods
+          let selectMethod = $(this).find('a').attr('data-method');
+          $(this).parent().hide();
+          searchMethodsSelect2[index] = selectMethod;
+
+          console.log(searchMethodsSelect2);
+          that2.getData(that2.tableName, that2.type, that2.searchdimension, that2.searchmeasure, that2.searchmethods,that2.colors,that2.searchmeasure2,searchMethodsSelect2, that2.filterCondition);
+          return false;
+        });
+
+
+        this.searchmethods2 = searchMethodsSelect2;
+        console.log(this.searchmeasure2);
+       
+        this.getData(this.tableName, this.type, this.searchdimension, this.searchmeasure, this.searchmethods, this.colors, this.searchmeasure2, this.searchmethods2, this.filterCondition);
+    },
+    drop5(event) {
+      event.preventDefault();
+      this.isShowFilter = true;
+      if(this.dragContent) {
         event.target.appendChild(this.dragContent);
+      }
+      this.filterName = this.dragContent.getElementsByTagName('a')[0].getAttribute('data-column');
     },
     drop6(event) {
         event.preventDefault();
@@ -381,7 +500,7 @@ export default {
   watch: {
     type: {
       handler: function(){
-        this.getData(this.tableName,this.type,this.searchdimension,this.searchmeasure, this.searchmethods,this.colors);
+        this.getData(this.tableName,this.type,this.searchdimension,this.searchmeasure, this.searchmethods,this.colors, this.searchmeasure2, this.searchmethods2, this.filterCondition);
       },
       //深度观察
       deep: true
@@ -517,4 +636,43 @@ export default {
         border-right: 5px solid #F5F5F5;
       .color-right
         margin-left: 10px;
+    .filter-content
+      margin: 10px 40px;
+      border: 5px solid #F5F5F5;
+      padding: 10px;
+      .filter-detail
+        display: flex;
+        justify-content:center;
+        align-items:center;
+        min-height: 180px;
+        .form-select
+          border: 0px;
+          border-bottom: solid 1px #29A2E6;
+          background-color: transparent;
+          border-radius: 0px;
+          min-width: 60px;
+          text-align: center; 
+          appearance:none;
+        input
+          display: inline-block;
+          border: 0px;     
+          border-bottom: 1px solid #29A2E6;   
+          background-color:transparent;
+          color: #000;
+          text-align: center;
+          margin: 5px;
+        .select-input
+          min-width: 180px;
+        .section-content
+          display: inline-block;
+          input
+            display: inline-block;
+            max-width: 80px;
+    .button-content
+      text-align: right;
+      color: #366797;
+      span
+        display: inline-block;
+        margin-right: 45px;
+        cursor: pointer;
 </style>
