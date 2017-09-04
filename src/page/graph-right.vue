@@ -38,7 +38,7 @@
               <div>1个维度,1个或多个度量</div>
             </div>
           </i>
-          <i class="icon-funnel_1">
+          <i class="icon-funnel" @click="update(13)">
             <div class="angle"></div>
             <div class="icon-bar-hover">
               <div class="bar-title">漏斗图</div>
@@ -230,6 +230,7 @@ export default {
       xmlHttp.onreadystatechange = function() {
         if ((xmlHttp.readyState == 4) && (xmlHttp.status == 200)) {
           console.log("ok");
+          alert("保存成功！")
         } else {
            //alert('fail');
         }
@@ -312,7 +313,7 @@ export default {
     overflow-y: auto;
     // overflow-x: hidden;
     .save-graph
-      background-color: #366797;
+      background-color: #223D6A;
       height: 30px;
       line-height: 30px;
       text-align: center;

@@ -3,33 +3,34 @@
   <div class="dashboard">
     <div class="left">
   	     <ul  class="table-name">
-          <li><router-link to="/dashboard/table1" >
-             
-                 GD_BABY_SITUATION
-                 </router-link></li> 
-            <li><router-link to="/dashboard/table2" >
-                 GD_BASIC_INFO_DETAIL
-                 </router-link></li> 
-            <li><router-link to="/dashboard/table3" >
-                 GD_EVALUATE_RESULT
-                 </router-link></li> 
-         </ul>
+          <li v-for="table in tableNameList">
+              <i class="icon1-file-text" @click="selectTable(table)">
+                  {{table}}
+              </i>
+          </li> 
+        </ul>
   	</div>
     <div class="right">
-      <keep-alive>
-      <router-view></router-view>
-      </keep-alive>
+      <div class="operate-content">
+        <div class="operate">分&nbsp&nbsp&nbsp&nbsp享</div>
+      </div>
+      <hr/>
+      <graphDisplay :tableName="tableName"></graphDisplay>
     </div>
   </div>
 </template>
 
 <script>
 import echarts from 'echarts';
+import graphDisplay from './graphDisplay.vue';
+var  BASE_URL ="http://127.0.0.1:8088/lxy/";
 export default {
   name: 'dashboard',
   data() {
     return {
       myChart: {},
+      tableNameList: [],
+      tableName:'',
       option: {
        series: []
       },
@@ -40,158 +41,74 @@ export default {
           useEnglish: false,
           customFilter: null
         }
-      },
-      treeData: [
-        {
-          id: 'folder1',
-          label: '人口数据',
-          open: true,
-          checked: false,
-          parentId: null,
-          visible: true,
-          searched: false,
-          children: [
-            {
-              id: 'table1',
-              label: '人口',
-              checked: false,
-              parentId: 1,
-              searched: true,
-              visible: true
-            },
- 			{
-              id: 'table2',
-              label: '人口',
-              checked: false,
-              parentId: 1,
-              searched: true,
-              visible: true
-            },{
-              id: 'table3',
-              label: '人口',
-              checked: false,
-              parentId: 1,
-              searched: true,
-              visible: true
-            }
-          ]
-        },
-                {
-          id: 'folder2',
-          label: '本地生活数据',
-          open: true,
-          checked: false,
-          parentId: null,
-          visible: true,
-          searched: false,
-          children: [
-            {
-              id: 'table1',
-              label: '美食类商铺数据',
-              checked: false,
-              parentId: 5,
-              searched: true,
-              visible: true
-            },
- 			{
-              id:'table2',
-              label: '北京校区信息数据',
-              checked: false,
-              parentId: 5,
-              searched: true,
-              visible: true
-            },{
-              id: 'table3',
-              label: '居民收支数据',
-              checked: false,
-              parentId:5,
-              searched: true,
-              visible: true
-            }
-          ]
-        }
-
-      ]
+      }
     }
   },
   created() {
-  	this._getGraphInfo(9, '.graph-content-list');
-  	this._getGraphInfo(10, '.graph-content-list-1');
-  	this._getGraphInfo(11, '.graph-content-list-2');
+    this.$http.get(BASE_URL+'all/tables').then((response) => {
+    // this.$http.get(BASE_URL+'all/columns?flag=kylin&table_name='+this.tableName).then((response) => {
+      var data = response.body;
+      this.tableNameList = data;
+    });
   },
   methods: {
-    _deepCopy(obj) {
-      let str, newobj;
-      str = newobj = obj instanceof Array ? [] : {};
-      if (typeof obj !== 'object') {
-        return;
-      } else if (window.JSON) {
-        str = JSON.stringify(obj) // 系列化对象
-        newobj = JSON.parse(str) // 还原
-      } else {
-        for (var i in obj) {
-          newobj[i] = typeof obj[i] === 'object' ? _deepCopy(obj[i]) : obj[i];
-        }
-      }
-      return newobj;
-    },
-    _getGraphInfo(id, contentList) {
-    	this.$http.get('http://localhost:8088/lxy/graph/get_info?graphId='+id).then((response) => {
-        var data = response.body;
-        // console.log(data.g_options);
-        this.option = this._deepCopy(JSON.parse(data.g_options));
-        // this.option = this._deepCopy(data.g_options);
-        // console.log(this.option);
-        this.myChart = echarts.init(document.querySelector(contentList));
-        this.myChart.setOption(this.option);
-      });
-    },
-    handleNode:function(node){
-  		if(node.children==undefined||node.children==[])
-  		{
-  			  this.table_title=node.label;
-
-  		}
-  	}
+    selectTable(table){
+      this.tableName = table;
+    }
   },
-  components: {}
+  components: {
+    'graphDisplay': graphDisplay
+  }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="stylus" rel="stylesheet/stylus">
-.table-name
-  font-size 15px
-  height 40px
-  line-height 40px
-  padding 10px 10px 
-  background-color rgb(202,217,246)
+<style lang="stylus" rel="stylesheet/stylus"> 
+  // background-color rgb(202,217,246)
 .dashboard
     position: fixed;
     top: 60px;
     left:0px;
     right: 0px;
     bottom: 0px;
+    // background-color: #f5f5f5;
     .left
     	width: 199px;
     	height: 100%;
-    	background-color: rgb(232,235,237);
+    	// background-color: rgb(232,235,237);
     	border-right: 1px rgb(227,230,232);
 	    position: absolute;
 	    top: 0;
 	    left: 0px;
 	    bottom: 0;
-	    .tree-1
-	    	margin-left: 30px;
+     background-color: #fff; 
+    .table-name
+        font-size 15px
+        height 40px
+        line-height 40px
+        padding 10px 10px
+        color: #000;
+        li:hover
+          background-color: #233B67;
+          color: #fff;
+          margin: 0 -10px;
+          cursor: pointer;
     .right
     	position: absolute;
     	top: 0;
     	left: 200px;
     	right: 0;
-    	background-color: rgb(232,235,237);
+    	// background-color: rgb(232,235,237);
     	overflow: scroll;
     	bottom:0px;
-    	[class^="graph-content-list"]
-        	width: 900px;
-        	height: 400px;
+     background-color: #fff;
+     .operate-content
+        overflow: hidden;
+        vertical-align: middle;
+     .operate
+        float: right;
+        padding: 10px;
+        margin-right: 80px;
+        color: #000;
+        cursor: pointer;
 </style>

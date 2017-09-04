@@ -6,7 +6,7 @@
           <div class="item item-title">工作表</div>
           <ul>
           <!-- <li class="item table-list-item"><a>外勤工作表</a></li> -->
-          <li class="item table-list-item"><a>{{tableName}}</a></li>
+          <li class="item table-list-item" @click="changTable"><a>{{tableName}}</a></li>
           </ul>
         </div>
         <div class="field-wrapper">
@@ -90,6 +90,17 @@
           </div>
         </div>
     </MyDialog>
+    <MyDialog :isShow="tableShow" @on-close="closeTableDialog">
+        <div class="dialog dialog-content">
+        <div class="table-title">选择工作表</div>
+          <ul>
+            <li class="table-list" v-for="table in tableNameList">
+            <input type="radio" name="radio" class="" value="">{{table}}
+            </li>
+          </ul>
+          <div class="common-btn conn-btn" @click="selectTable">切换工作表</div>
+        </div>
+    </MyDialog>
   </div>
 </template>
 
@@ -115,7 +126,8 @@ export default {
       dragContent: '',
       chartDate: {},
       // tableName: 'worker',
-      tableName: 'GD_BABY_SITUATION',
+      tableName: 'players',
+      // tableName: 'GD_BABY_SITUATION',
       myChart: {},
       option: {
         series: []
@@ -133,6 +145,8 @@ export default {
       color: '#f00',
       isShow: false,
       isShowFilter: false,
+      tableShow: true,
+      tableNameList: ['players','worker','topwebsite','bar'],
       dragColorItem:'',
       sectionSelect: true,
       commonSelect: false,
@@ -147,7 +161,14 @@ export default {
   // computed:{
   // },
   created() {
-    this.$http.get(BASE_URL+'all/columns?flag=kylin&table_name='+this.tableName).then((response) => {
+    this.$http.get(BASE_URL+'all/tables').then((response) => {
+    // this.$http.get(BASE_URL+'all/columns?flag=kylin&table_name='+this.tableName).then((response) => {
+      var data = response.body;
+      // console.log(response);
+      this.tableNameList = data;
+    });
+    this.$http.get(BASE_URL+'all/columns?table_name='+this.tableName).then((response) => {
+    // this.$http.get(BASE_URL+'all/columns?flag=kylin&table_name='+this.tableName).then((response) => {
       var data = response.body;
       // console.log(response);
         for(let i in data) {
@@ -197,12 +218,13 @@ export default {
     show(flag) {
       this.showFlag = flag;
     },
+    changTable(){
+      this.tableShow = true;
+    },
     getData(table,type,dimension,measure,methods,colors,measure2,methods2,filterCondition){ //获取拖拽后的数据，并生成图表
       this.$http.get(BASE_URL+'chart/query?dimension='+dimension+'&table='+table+'&type='+type+'&values='+measure+'&methods='+methods+'&colors='+colors+'&values2='+measure2+'&methods2='+methods2+'&having='+filterCondition).then((response) => {
           var data = response.body;
-          this.option = this._deepCopy(data);
-         console.log("======");
-          console.log(this.option); 
+          this.option = this._deepCopy(data); 
           this.myChart.setOption(this.option,true);//true表示和之前的option合并
           this._init();
         });
@@ -274,6 +296,32 @@ export default {
     },
     closeFilterDialog() {
       this.isShowFilter = false;
+    },
+    closeTableDialog() {
+      this.tableShow = false;
+    },
+    selectTable(){
+      var radio = document.getElementsByName("radio");
+      for(let i = 0; i < radio.length; i++){
+        if(radio[i].checked){
+          this.tableName=radio[i].parentNode.innerText;
+          this.$http.get(BASE_URL+'all/columns?table_name='+this.tableName).then((response) => {
+        // this.$http.get(BASE_URL+'all/columns?flag=kylin&table_name='+this.tableName).then((response) => {
+            var data = response.body;
+            this.measureList = [];
+            this.dimensionList = [];
+      // console.log(response);
+            for(let i in data) {
+              if(data[i].t_type == 1){
+              this.measureList.push(data[i]);
+              } else if(data[i].t_type == 2){
+              this.dimensionList.push(data[i]);
+              }
+            }
+          });
+          this.tableShow = false;
+        }
+      }
     },
     drag1(event) {
        this.dimension = event.currentTarget;
@@ -623,9 +671,11 @@ export default {
     overflow-y: auto;
     // overflow-x: hidden;
   .dialog-content
+    position: relative;
     min-height: 300px;
     min-width: 400px;
     width: 30%;
+    color: #000;
     .color-select-content
       margin: 25px 40px;
       .color-left
@@ -675,4 +725,20 @@ export default {
         display: inline-block;
         margin-right: 45px;
         cursor: pointer;
+    .table-title
+      font-size: 20px;
+    ul
+      padding: 10px;
+      .table-list
+        cursor: pointer;
+        padding: 5px 0;
+    .common-btn{
+      position: absolute;
+      bottom: 15px;
+      right: 20px;
+      padding: 5px 15px;
+      cursor: pointer;
+      background-color: #2F4574;
+      color:#fff;
+  }
 </style>

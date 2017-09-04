@@ -18,86 +18,57 @@ import Map6 from '../page/base/map6.vue'
 import Test from '../page/test.vue'
 import Test2 from '../page/test2.vue'
 
-import Table1 from '../page/table1.vue'
-import Table2 from '../page/table2.vue'
-import Table3 from '../page/table3.vue'
 Vue.use(Router)
 
 export default new Router({
   mode: 'history',
-  routes: [
-    {
+  routes: [{
       path: '/',
-      redirect:'/index'
-    },
-    {
-      path:'/index',
-      name:'index',
-      component:IndexVue
-    },
-    {
+      redirect: '/index'
+    }, {
+      path: '/index',
+      name: 'index',
+      component: IndexVue
+    }, {
       path: '/table',
       name: 'table',
       component: TableVue
-    },
-     {
+    }, {
       path: '/map',
       name: 'map',
       component: MapVue,
-      children:[{
-        path:'map1',
-        component:Map1
-      },
-      {
-        path:'map2',
-        component:Map2
-      },
-      {
-        path:'map3',
-        component:Map3
-      },
-      {
-        path:'map4',
-        component:Map4
-      },
-      {
-        path:'map5',
-        component:Map5
-      }
-      ,
-      {
-        path:'map6',
-        component:Map6
+      children: [{
+        path: 'map1',
+        component: Map1
+      }, {
+        path: 'map2',
+        component: Map2
+      }, {
+        path: 'map3',
+        component: Map3
+      }, {
+        path: 'map4',
+        component: Map4
+      }, {
+        path: 'map5',
+        component: Map5
+      }, {
+        path: 'map6',
+        component: Map6
       }]
-    },
-     {
+    }, {
       path: '/graph',
       name: 'graph',
       component: GraphVue
-    },
-     {
+    }, {
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardVue,
-      children:[{
-        path:'table1',
-        component:Table1
-      },
-      {
-        path:'table2',
-        component:Table2
-      },
-      {
-        path:'table3',
-        component:Table3
-      }]
-    },
-     {
+    }, {
       path: '/test',
       name: 'Test',
       component: Test
-    },
-    {
+    }, {
       path: '/test2',
       name: 'Test2',
       component: Test2
@@ -105,5 +76,3 @@ export default new Router({
 
   ]
 })
-
-
